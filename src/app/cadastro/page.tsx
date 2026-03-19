@@ -133,12 +133,12 @@ export default function CadastroPage() {
               </div>
               
               <div className="space-y-1.5">
-                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Senha Forte</label>
+                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Senha Forte (Mín. 4 caracteres)</label>
                 <input 
-                  type="password" required
+                  type="password" required minLength={4}
                   value={password} onChange={e => setPassword(e.target.value)}
                   className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-3.5 outline-none focus:border-impacto-orange focus:ring-1 focus:ring-impacto-orange/20 transition-all text-sm tracking-[0.4em] font-mono"
-                  placeholder="••••••••"
+                  placeholder="••••"
                 />
               </div>
 

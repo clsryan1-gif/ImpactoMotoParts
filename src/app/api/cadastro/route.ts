@@ -11,11 +11,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Dados incompletos" }, { status: 400 });
     }
 
-    const exists = await prisma.user.findUnique({
+    if (password.length < 4) {
+      return NextResponse.json({ message: "A senha deve ter no mínimo 4 caracteres" }, { status: 400 });
+    }
+
+    // Verificar se NOME já existe (usuario)
+    const nameExists = await prisma.user.findUnique({
+      where: { name }
+    });
+
+    if (nameExists) {
+      return NextResponse.json({ message: "Este Nome de Piloto já está em uso" }, { status: 400 });
+    }
+
+    // Verificar se TELEFONE já existe
+    const phoneExists = await prisma.user.findUnique({
       where: { phone }
     });
 
-    if (exists) {
+    if (phoneExists) {
       return NextResponse.json({ message: "Este WhatsApp já está em uso" }, { status: 400 });
     }
 
