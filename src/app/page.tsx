@@ -117,10 +117,10 @@ export default function LandingPage() {
           animate={{ opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           style={{ willChange: "opacity" }}
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-600/15 rounded-full blur-[80px] -z-10"
+          className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-600/15 rounded-full blur-[40px] -z-10"
         ></motion.div>
         
-        <div className="absolute top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-impacto-orange/10 rounded-full blur-[60px] -z-10"></div>
+        <div className="absolute top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-impacto-orange/10 rounded-full blur-[30px] -z-10"></div>
 
         <div className="container mx-auto px-4 flex flex-col items-center text-center z-10 relative pt-[12vh] mb-32">
           
