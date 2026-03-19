@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050505;
+  --foreground: #ffffff;
+  --accent-red: #ff0000;
+  --accent-orange: #ff6600;
+  --accent-yellow: #ffcc00;
+  --zinc-950: #09090b;
+
+  /* Cores do Tema - Tailwind v4 detecta automaticamente o prefixo --color- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-impacto-red: var(--accent-red);
+  --color-impacto-orange: var(--accent-orange);
+  --color-impacto-yellow: var(--accent-yellow);
+}
+
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Transição de entrada de página ULTRA-RÁPIDA ── */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 0.2s cubic-bezier(0.2, 0, 0, 1) both;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+.gpu-accelerated {
+  will-change: transform, opacity;
+}
+
+.racing-gradient {
+  background: linear-gradient(90deg, var(--accent-yellow), var(--accent-orange), var(--accent-red));
+}
+
+.low-perf-blur {
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* Barra de Rolagem Elite */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}

@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String?
+  email     String   @unique
+  password  String
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+model Product {
+  id              String      @id @default(uuid())
+  nome            String
+  categoria       String
+  compatibilidade String
+  preco           Float
+  imagem          String?
+  estoque         Int         @default(0)
+  ativo           Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  orderItems      OrderItem[]
+
+  @@index([categoria])
+  @@index([preco])
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  userId      String
+  total       Float
+  status      String      @default("PENDENTE")
+  paymentType String
+  createdAt   DateTime    @default(now())
+  user        User        @relation(fields: [userId], references: [id])
+  items       OrderItem[]
+
+  @@index([status])
+  @@index([userId])
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int     @default(1)
+  price     Float
+  product   Product @relation(fields: [productId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id])
+}
+
+model Financeiro {
+  id        String   @id @default(uuid())
+  tipo      String
+  valor     Float
+  descricao String
+  categoria String
+  data      DateTime @default(now())
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  user      String
+  role      String?
+  type      String
+  detail    String
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([user])
+}
