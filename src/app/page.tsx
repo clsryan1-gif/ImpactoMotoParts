@@ -83,11 +83,18 @@ export default function LandingPage() {
                 <button onClick={() => signOut()} className="text-zinc-500 hover:text-red-500 text-[10px] md:text-xs tracking-wider transition">SAIR</button>
               </div>
             ) : (
-              <Link href="/login">
-                <span className="text-zinc-400 hover:text-white text-[10px] md:text-xs font-bold tracking-widest transition-all duration-300 border border-zinc-700 px-4 py-1.5 rounded-full hover:border-zinc-400 hover:bg-zinc-800/50">
-                  ENTRAR
-                </span>
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link href="/login">
+                  <span className="text-zinc-400 hover:text-white text-[10px] md:text-xs font-bold tracking-widest transition-all duration-300 border border-zinc-700 px-3 py-1.5 rounded-full hover:border-zinc-400 hover:bg-zinc-800/50">
+                    ENTRAR
+                  </span>
+                </Link>
+                <Link href="/cadastro">
+                  <span className="text-zinc-400 hover:text-white text-[10px] md:text-xs font-bold tracking-widest transition-all duration-300 border border-zinc-700 px-3 py-1.5 rounded-full hover:border-zinc-400 hover:bg-zinc-800/50">
+                    CADASTRO
+                  </span>
+                </Link>
+              </div>
             )}
 
             <Link href={session ? "/produtos" : "/login"}>
@@ -103,10 +110,6 @@ export default function LandingPage() {
               </motion.button>
             </Link>
           </div>
-
-          <button className="md:hidden text-zinc-300 p-2">
-            <Menu className="w-6 h-6" />
-          </button>
         </div>
       </motion.header>
 
