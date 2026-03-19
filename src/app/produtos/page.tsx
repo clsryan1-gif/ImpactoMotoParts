@@ -109,16 +109,17 @@ export default function ProdutosPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans pb-20 overflow-x-hidden relative">
 
-      {/* BACKGROUND EFFECTS - OTIMIZADO (Removido rotação constante para evitar lag de GPU) */}
+      {/* BACKGROUND EFFECTS - OTIMIZADO */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-         <div className="absolute -top-[10%] -right-[5%] w-[600px] h-[600px] bg-red-600/5 rounded-full blur-[40px] mix-blend-screen"></div>
-         <div className="absolute -bottom-[10%] -left-[5%] w-[400px] h-[400px] bg-red-600/5 rounded-full blur-[30px] mix-blend-screen"></div>
+         <div className="absolute -top-[10%] -right-[5%] w-[600px] h-[600px] bg-red-600/10 rounded-full blur-[80px] mix-blend-screen"></div>
+         <div className="absolute -bottom-[10%] -left-[5%] w-[400px] h-[400px] bg-impacto-orange/10 rounded-full blur-[60px] mix-blend-screen"></div>
       </div>
 
       {/* HEADER */}
       <motion.header 
         initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.5, ease: "easeOut" }}
-        className="sticky top-0 z-50 bg-zinc-950/80 low-perf-blur border-b border-zinc-800/50"
+        className="sticky top-0 z-50 glass-premium border-b border-white/5"
+        suppressHydrationWarning
       >
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <Link href="/">
@@ -130,8 +131,9 @@ export default function ProdutosPage() {
                 src="/logo.png" 
                 alt="Impacto Moto Parts" 
                 fill 
-                className="object-contain" 
+                className="object-contain opacity-100" 
                 priority
+                quality={100}
               />
             </motion.div>
           </Link>
@@ -198,7 +200,7 @@ export default function ProdutosPage() {
           <input
             type="text" value={busca} onChange={e => setBusca(e.target.value)}
             placeholder="Buscar peça..."
-            className="w-full bg-zinc-900/80 border border-zinc-700/50 low-perf-blur rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:border-red-600 transition-all"
+            className="w-full bg-zinc-900/80 border border-zinc-700/50 glass-premium rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:border-red-600 transition-all"
           />
         </div>
       </motion.div>
@@ -213,8 +215,9 @@ export default function ProdutosPage() {
         <motion.h1 
           initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }}
           className="text-4xl md:text-6xl font-black font-[family-name:var(--font-black-ops)] tracking-tighter"
+          suppressHydrationWarning
         >
-          CATÁLOGO <span className="text-transparent bg-clip-text bg-gradient-to-r from-impacto-yellow to-impacto-orange">IMPACTO</span>
+          CATÁLOGO <span className="text-racing-gradient">IMPACTO</span>
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1, duration: 0.3 }} className="text-zinc-500 text-sm mt-2 font-medium">
           {filtrados.length} {filtrados.length === 1 ? 'peça encontrada' : 'peças encontradas'}
@@ -313,7 +316,7 @@ export default function ProdutosPage() {
               className="fixed bottom-8 right-8 z-[60] flex items-center justify-center"
             >
               {/* Glow Pulsante de fundo */}
-              <div className="absolute inset-0 bg-red-600 rounded-full blur-2xl opacity-40 animate-pulse"></div>
+              <div className="absolute inset-0 bg-red-600 rounded-full blur-3xl opacity-50 animate-pulse"></div>
               
               <button className="relative bg-red-600 hover:bg-red-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(220,38,38,0.5)] border-2 border-white/20 transition-colors group">
                 <ShoppingCart className="w-7 h-7" />

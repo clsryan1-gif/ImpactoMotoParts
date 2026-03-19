@@ -24,14 +24,14 @@ export async function POST(req: NextRequest) {
 
     const { nome, categoria, compatibilidade, preco, imagem, estoque } = validation.data;
 
-    const product = await (prisma.product as any).create({
+    const product = await prisma.product.create({
       data: {
         nome,
         categoria,
         compatibilidade,
         preco,
         imagem,
-        estoque
+        estoque: estoque ?? 0
       }
     });
 

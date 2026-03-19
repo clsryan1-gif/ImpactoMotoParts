@@ -1,19 +1,28 @@
 @import "tailwindcss";
 
+@theme {
+  --color-impacto-red: #ff0000;
+  --color-impacto-orange: #ff4d00;
+  --color-impacto-yellow: #ffcc00;
+  --color-zinc-950: #050505;
+}
+
+/* Classe de gradiente ultra-robusta para garantir visibilidade */
+.text-racing-gradient {
+  background: linear-gradient(90deg, #ffcc00 0%, #ff4d00 50%, #ff0000 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  display: inline-block;
+}
+
 :root {
-  --background: #050505;
+  --background: #000000;
   --foreground: #ffffff;
-  --accent-red: #ff0000;
-  --accent-orange: #ff6600;
-  --accent-yellow: #ffcc00;
-  --zinc-950: #09090b;
 
   /* Cores do Tema - Tailwind v4 detecta automaticamente o prefixo --color- */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-impacto-red: var(--accent-red);
-  --color-impacto-orange: var(--accent-orange);
-  --color-impacto-yellow: var(--accent-yellow);
 }
 
 
@@ -57,12 +66,19 @@ body {
 }
 
 .racing-gradient {
-  background: linear-gradient(90deg, var(--accent-yellow), var(--accent-orange), var(--accent-red));
+  background: linear-gradient(135deg, var(--accent-yellow), var(--accent-orange), var(--accent-red));
 }
 
 .low-perf-blur {
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.glass-premium {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* Barra de Rolagem Elite */

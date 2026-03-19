@@ -147,7 +147,7 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans pb-20 overflow-x-hidden">
       
       {/* HEADER SIMPLIFICADO - RACING THEME */}
-      <header className="bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/50 sticky top-0 z-50">
+      <header className="glass-premium sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/produtos">
             <motion.div 
@@ -160,13 +160,14 @@ export default function CheckoutPage() {
           </Link>
           
           <Link href="/">
-            <div className="relative h-8 md:h-10 w-24 md:w-32 cursor-pointer brightness-110">
+            <div className="relative h-8 md:h-10 w-24 md:w-32 cursor-pointer brightness-125">
               <Image 
                 src="/logo.png" 
                 alt="Impacto" 
                 fill 
-                className="object-contain" 
+                className="object-contain opacity-100" 
                 priority
+                quality={100}
               />
             </div>
           </Link>
@@ -179,9 +180,9 @@ export default function CheckoutPage() {
         
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-            <h1 className="text-3xl md:text-5xl font-black font-[family-name:var(--font-black-ops)] tracking-tighter flex items-center gap-3">
+            <h1 className="text-3xl md:text-5xl font-black font-[family-name:var(--font-black-ops)] tracking-tighter flex items-center gap-3" suppressHydrationWarning>
               <ShoppingCart className="w-8 h-8 md:w-10 md:h-10 text-impacto-yellow" />
-              FECHAR <span className="text-transparent bg-clip-text bg-gradient-to-r from-impacto-yellow to-impacto-orange">PEDIDO</span>
+              FECHAR <span className="text-racing-gradient">PEDIDO</span>
             </h1>
             <p className="text-zinc-500 mt-2 font-black uppercase tracking-widest text-[10px]">Pista liberada para finalização segura.</p>
           </motion.div>
@@ -204,9 +205,10 @@ export default function CheckoutPage() {
         {carrinho.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
-            className="bg-gradient-to-br from-zinc-900/80 to-zinc-900/30 border border-zinc-800/50 rounded-3xl py-24 px-4 text-center shadow-2xl relative overflow-hidden"
+            className="bg-zinc-900/60 glass-premium rounded-3xl py-24 px-4 text-center shadow-2xl relative overflow-hidden"
+            suppressHydrationWarning
           >
-             <div className="absolute inset-0 bg-red-500/5 blur-[120px] rounded-full pointer-events-none"></div>
+             <div className="absolute inset-0 bg-red-500/10 blur-[150px] rounded-full pointer-events-none"></div>
 
             <motion.div 
               animate={{ y: [0, -10, 0] }} 
@@ -241,7 +243,7 @@ export default function CheckoutPage() {
                     exit={{ opacity: 0, x: 50, scale: 0.8 }}
                     transition={{ duration: 0.2 }}
                     key={item.id} 
-                    className="bg-zinc-900 border border-zinc-800 hover:border-red-500/30 rounded-2xl p-4 flex items-center gap-4 relative group transition-colors shadow-lg overflow-hidden"
+                    className="glass-premium rounded-2xl p-4 flex items-center gap-4 relative group transition-colors shadow-2xl overflow-hidden gpu-accelerated"
                   >
                     {/* Brilhozinho on hover */}
                     <div className="absolute inset-0 bg-gradient-to-r from-red-600/0 via-red-600/5 to-red-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none -translate-x-full group-hover:translate-x-full ease-in-out"></div>
@@ -312,11 +314,11 @@ export default function CheckoutPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
-                className="bg-gradient-to-b from-zinc-900 border border-zinc-800 rounded-3xl p-6 lg:p-8 sticky top-24 shadow-2xl relative overflow-hidden"
+                className="glass-premium rounded-3xl p-6 lg:p-8 sticky top-24 shadow-2xl relative overflow-hidden"
               >
                 
                 {/* Glow decorativo */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/5 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
 
                 <h3 className="font-black text-xl mb-6 flex items-center gap-2 tracking-wide">
                   <Info className="w-5 h-5 text-zinc-400" />

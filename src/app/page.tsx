@@ -29,7 +29,8 @@ export default function LandingPage() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="sticky top-0 z-50 bg-zinc-950/80 low-perf-blur border-b border-zinc-800/50"
+        className="sticky top-0 z-50 glass-premium border-b border-white/5"
+        suppressHydrationWarning
       >
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
@@ -116,10 +117,10 @@ export default function LandingPage() {
           animate={{ opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           style={{ willChange: "opacity" }}
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-600/5 rounded-full blur-[40px] -z-10"
+          className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-600/15 rounded-full blur-[80px] -z-10"
         ></motion.div>
         
-        <div className="absolute top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-red-600/5 rounded-full blur-[30px] -z-10"></div>
+        <div className="absolute top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-impacto-orange/10 rounded-full blur-[60px] -z-10"></div>
 
         <div className="container mx-auto px-4 flex flex-col items-center text-center z-10 relative pt-[12vh] mb-32">
           
@@ -129,26 +130,28 @@ export default function LandingPage() {
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 0.15, scale: 1.8 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
-              className="relative w-full h-full max-w-4xl opacity-15"
+              className="relative w-full h-full max-w-4xl opacity-30"
             >
                <Image
                  src="/logo.png"
                  alt=""
                  fill
-                 quality={40}
-                 className="object-contain filter grayscale invert opacity-20"
+                 quality={100}
+                 className="object-contain filter grayscale invert opacity-30 gpu-accelerated"
                />
             </motion.div>
           </div>
           
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.8 }}
+            className="relative z-10"
+            suppressHydrationWarning
           >
-            <h1 className="text-5xl md:text-8xl uppercase tracking-tighter mb-8 leading-[0.9] font-[family-name:var(--font-black-ops)] relative text-balance">
+            <h1 className="text-5xl md:text-8xl uppercase tracking-tight mb-8 leading-tight font-[family-name:var(--font-black-ops)] relative text-balance">
               VELOCIDADE <br className="md:hidden" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-impacto-yellow via-impacto-orange to-impacto-red">SEM LIMITES.</span><br />
+              <span className="text-racing-gradient">SEM LIMITES.</span><br />
               <span className="text-white">IMPACTO TOTAL.</span>
             </h1>
           </motion.div>
@@ -236,7 +239,7 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="relative z-10 bg-zinc-950/90 low-perf-blur pt-16 pb-8 border-t border-zinc-900/50 text-center md:text-left mt-auto gpu-accelerated">
+      <footer className="relative z-10 glass-premium pt-16 pb-8 border-t border-white/5 text-center md:text-left mt-auto gpu-accelerated">
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12 items-center mb-12">
           
           <motion.div 

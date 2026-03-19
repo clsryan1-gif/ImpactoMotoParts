@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Package, ShoppingCart, LayoutDashboard, LogOut, ChevronLeft } from "lucide-react";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -14,13 +15,21 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row">
       {/* Sidebar Admin */}
-      <aside className="w-full md:w-64 bg-zinc-900/50 border-r border-zinc-800/50 p-6 flex flex-col gap-8 shrink-0 relative z-20">
+      <aside className="w-full md:w-64 glass-premium p-6 flex flex-col gap-8 shrink-0 relative z-20">
         <div className="flex flex-col gap-2">
           <Link href="/" className="text-zinc-500 hover:text-red-500 flex items-center gap-2 text-xs uppercase font-bold tracking-widest transition mb-4">
             <ChevronLeft className="w-4 h-4" /> Sair do Painel
           </Link>
           <Link href="/">
-            <img src="/logo.png" alt="Impacto Logo" className="h-8 object-contain self-start grayscale opacity-50 hover:opacity-100 hover:grayscale-0 transition-all cursor-pointer" />
+            <div className="relative h-8 w-32 self-start mb-2 group">
+              <Image 
+                src="/logo.png" 
+                alt="Impacto Logo" 
+                fill 
+                className="object-contain grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all cursor-pointer" 
+                quality={100}
+              />
+            </div>
           </Link>
           <h2 className="text-red-500 font-bold tracking-widest uppercase text-xs">Admin Dashboard</h2>
         </div>
@@ -48,7 +57,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Conteúdo Principal */}
       <main className="flex-1 p-4 md:p-8 relative overflow-x-hidden">
         {/* Ambient Dark Glow */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
         {children}
       </main>
     </div>

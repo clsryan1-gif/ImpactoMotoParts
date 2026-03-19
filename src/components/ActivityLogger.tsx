@@ -21,10 +21,7 @@ const actsChannel = typeof window !== 'undefined' ? new BroadcastChannel('impact
 
 export default function ActivityLogger() {
   const { data: session } = useSession();
-  const [logs, setLogs] = useState<ActivityLog[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(true);
-  const [startTime] = useState(new Date());
+  const [startTime, setStartTime] = useState<Date | null>(null);
   const pathname = usePathname();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -32,6 +29,7 @@ export default function ActivityLogger() {
   const userRole = (session?.user as any)?.role || 'USER';
 
   const formatSessionTime = () => {
+    if (!startTime) return "0:00";
     const diff = Math.floor((new Date().getTime() - startTime.getTime()) / 1000);
     const m = Math.floor(diff / 60);
     const s = diff % 60;
@@ -141,6 +139,7 @@ export default function ActivityLogger() {
 
   // Log de sistema inicial
   useEffect(() => {
+    setStartTime(new Date());
     if (isAdmin) {
       addLog('system', 'Console Elite Inicializado', 'SYSTEM');
     }

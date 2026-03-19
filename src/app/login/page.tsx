@@ -43,8 +43,9 @@ export default function LoginPage() {
           src="/logo.png" 
           alt="" 
           fill
-          className="object-contain opacity-20 mix-blend-screen gpu-accelerated"
+          className="object-contain opacity-30 mix-blend-screen gpu-accelerated"
           priority
+          quality={100}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60"></div>
@@ -55,6 +56,7 @@ export default function LoginPage() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-5xl z-10"
+        suppressHydrationWarning
       >
         <div className="relative group flex flex-col md:flex-row gap-6">
           
@@ -62,7 +64,7 @@ export default function LoginPage() {
           <div className="flex-1 relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-impacto-red to-impacto-orange rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
             
-            <div className="relative bg-zinc-900/40 backdrop-blur-xl border border-white/10 p-8 md:p-10 rounded-[2.5rem] h-full shadow-2xl gpu-accelerated">
+            <div className="relative glass-premium p-8 md:p-10 rounded-[2.5rem] h-full shadow-2xl gpu-accelerated">
               <Link href="/" className="absolute top-8 left-8 text-zinc-500 hover:text-white transition-colors">
                 <ChevronLeft className="w-6 h-6" />
               </Link>
@@ -79,7 +81,7 @@ export default function LoginPage() {
                 </div>
                 <h2 className="text-2xl md:text-3xl font-[family-name:var(--font-black-ops)] text-center tracking-tighter leading-none">
                   ENTRAR NO <br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-impacto-yellow to-impacto-orange">BOX.</span>
+                  <span className="text-racing-gradient">BOX.</span>
                 </h2>
               </div>
 
@@ -125,9 +127,9 @@ export default function LoginPage() {
 
           {/* LADO DIREITO: CHAMADA PARA CADASTRO (AÇÃO PRINCIPAL) */}
           <div className="md:w-[380px] relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-impacto-orange to-impacto-yellow rounded-[2.5rem] blur opacity-40 animate-pulse"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-impacto-orange to-impacto-yellow rounded-[2.5rem] blur-xl opacity-50 animate-pulse"></div>
             
-            <div className="relative bg-gradient-to-br from-impacto-red/20 to-impacto-orange/20 backdrop-blur-xl border border-impacto-yellow/20 p-8 md:p-10 rounded-[2.5rem] h-full flex flex-col items-center justify-center text-center overflow-hidden gpu-accelerated">
+            <div className="relative bg-gradient-to-br from-impacto-red/30 to-impacto-orange/30 backdrop-blur-2xl border border-impacto-yellow/30 p-8 md:p-10 rounded-[2.5rem] h-full flex flex-col items-center justify-center text-center overflow-hidden gpu-accelerated">
               <div className="absolute top-0 right-0 w-32 h-32 bg-impacto-yellow/10 blur-[40px] rounded-full pointer-events-none"></div>
               
               <Zap className="w-12 h-12 text-impacto-yellow mb-6 drop-shadow-[0_0_15px_rgba(255,204,0,0.5)]" />

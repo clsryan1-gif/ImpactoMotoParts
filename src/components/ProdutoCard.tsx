@@ -32,23 +32,25 @@ const ProdutoCard = React.memo(({ produto, isAdded, onAdicionar, BRL }: ProdutoC
   return (
     <motion.div 
       variants={cardVariants}
-      className="bg-zinc-900/80 low-perf-blur border border-zinc-800/80 rounded-2xl overflow-hidden flex flex-col hover:border-red-600/50 transition-colors group relative shadow-lg"
+      className="glass-premium rounded-2xl overflow-hidden flex flex-col hover:border-impacto-yellow/50 transition-colors group relative shadow-2xl gpu-accelerated"
+      suppressHydrationWarning
     >
       {/* Imagem Container - Link para detalhes */}
       <Link href={`/produtos/${produto.id}`} className="block relative">
-        <div className="bg-white/5 h-40 flex items-center justify-center p-4 overflow-hidden relative">
+        <div className="bg-white/5 h-40 flex items-center justify-center p-4 overflow-hidden relative grayscale-[0.2] group-hover:grayscale-0 transition-all">
           {produto.imagem ? (
             <motion.div
-              whileHover={{ scale: 1.15, rotate: 2 }}
-              transition={{ duration: 0.2 }}
-              className="relative h-full w-full"
+              whileHover={{ scale: 1.2, rotate: 1 }}
+              transition={{ duration: 0.3 }}
+              className="relative h-full w-full drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"
             >
               <Image
                 src={produto.imagem}
                 alt={produto.nome}
                 fill
-                className="object-contain"
+                className="object-contain gpu-accelerated"
                 sizes="(max-width: 768px) 50vw, 20vw"
+                quality={90}
               />
             </motion.div>
           ) : (
@@ -56,7 +58,7 @@ const ProdutoCard = React.memo(({ produto, isAdded, onAdicionar, BRL }: ProdutoC
           )}
           
           {/* Efeito Glow Gradiente nas bordas da imagem */}
-          <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-zinc-900/80 to-transparent"></div>
+          <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/80 to-transparent"></div>
         </div>
       </Link>
 

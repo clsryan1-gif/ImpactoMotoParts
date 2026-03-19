@@ -20,12 +20,26 @@ export default function ProductForm() {
     e.preventDefault();
     setLoading(true);
 
+    const precoNum = parseFloat(preco);
+    const estoqueNum = parseInt(estoque, 10);
+
+    if (isNaN(precoNum) || isNaN(estoqueNum)) {
+      showToast('Preço ou estoque inválido.', 'error');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/admin/produtos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          nome, categoria, compatibilidade, preco: parseFloat(preco), imagem, estoque: parseInt(estoque, 10)
+          nome, 
+          categoria, 
+          compatibilidade, 
+          preco: precoNum, 
+          imagem, 
+          estoque: estoqueNum
         })
       });
 
