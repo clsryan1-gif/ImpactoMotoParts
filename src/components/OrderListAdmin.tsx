@@ -36,7 +36,7 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
             .section { margin-bottom: 30px; }
             .section-title { font-size: 12px; font-weight: 900; text-transform: uppercase; color: #666; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
             .client-name { font-size: 20px; font-weight: 900; text-transform: uppercase; }
-            .client-email { font-size: 14px; color: #444; }
+            .client-phone { font-size: 14px; color: #444; }
             .items-table { width: 100%; border-collapse: collapse; }
             .items-table th { text-align: left; font-size: 10px; text-transform: uppercase; padding: 10px; border-bottom: 2px solid #000; }
             .items-table td { padding: 12px 10px; border-bottom: 1px solid #eee; font-size: 13px; }
@@ -52,7 +52,7 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
           <div class="section">
             <div class="section-title">Destinatário / Piloto</div>
             <div class="client-name">${pedido.user?.name || 'Cliente'}</div>
-            <div class="client-email">${pedido.user?.email}</div>
+            <div class="client-phone">WhatsApp: ${pedido.user?.phone}</div>
           </div>
           <div class="section">
             <div class="section-title">Conteúdo da Encomenda</div>
@@ -88,7 +88,7 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
   const pedidosFiltrados = (filtro === 'TODOS' ? pedidos : pedidos.filter(p => p.status === filtro))
     .filter(p => 
       p.user?.name?.toLowerCase().includes(busca.toLowerCase()) || 
-      p.user?.email?.toLowerCase().includes(busca.toLowerCase()) ||
+      p.user?.phone?.toLowerCase().includes(busca.toLowerCase()) ||
       p.id.includes(busca)
     );
 
@@ -99,7 +99,7 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
         <div className="flex-1 relative">
           <input 
             type="text"
-            placeholder="Buscar por cliente, email ou ID..."
+            placeholder="Buscar por cliente, whatsapp ou ID..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             className="w-full bg-zinc-950/50 border border-zinc-800 rounded-2xl py-3 px-5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-all font-medium"
@@ -173,7 +173,7 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
               </div>
               <div>
                 <h3 className="font-black text-white text-sm uppercase tracking-wide">{pedido.user?.name || "Piloto"}</h3>
-                <p className="text-[10px] text-zinc-500 truncate font-medium">{pedido.user?.email}</p>
+                <p className="text-[10px] text-zinc-500 truncate font-medium">{pedido.user?.phone}</p>
               </div>
             </div>
 

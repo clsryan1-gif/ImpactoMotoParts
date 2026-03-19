@@ -76,7 +76,7 @@ export default function MeusPedidos() {
           <h1 className="text-3xl font-black uppercase tracking-widest flex items-center gap-2">
             <ShoppingCart className="w-7 h-7 text-red-500" /> Meus Pedidos
           </h1>
-          <p className="text-zinc-500 text-sm mt-1">Histórico de compras de <strong className="text-white">{session?.user?.name || session?.user?.email}</strong></p>
+          <p className="text-zinc-500 text-sm mt-1">Histórico de compras de <strong className="text-white">{session?.user?.name || session?.user?.phone}</strong></p>
         </div>
       </div>
 

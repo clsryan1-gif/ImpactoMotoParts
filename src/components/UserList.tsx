@@ -9,7 +9,7 @@ import { useToast } from '@/context/ToastContext';
 type User = {
   id: string;
   name: string;
-  email: string;
+  phone: string;
   role: string;
   createdAt: string;
   ordersCount: number;
@@ -28,17 +28,17 @@ export default function UserList({ initialUsers }: { initialUsers: User[] }) {
   
   // Modais
   const [isAddingUser, setIsAddingUser] = useState(false);
-  const [newUser, setNewUser] = useState({ name: '', email: '', password: '', role: 'USER' });
+  const [newUser, setNewUser] = useState({ name: '', phone: '', password: '', role: 'USER' });
   const [editUser, setEditUser] = useState<User | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const filteredUsers = users.filter(u => 
     u.name.toLowerCase().includes(search.toLowerCase()) || 
-    u.email.toLowerCase().includes(search.toLowerCase())
+    u.phone.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleCreate = async () => {
-    if (!newUser.name || !newUser.email || !newUser.password) {
+    if (!newUser.name || !newUser.phone || !newUser.password) {
       showToast('Preencha os campos obrigatórios!', 'error');
       return;
     }
@@ -66,7 +66,7 @@ export default function UserList({ initialUsers }: { initialUsers: User[] }) {
       setUsers([addedUser, ...users]);
       showToast('Novo piloto cadastrado com sucesso!', 'success');
       setIsAddingUser(false);
-      setNewUser({ name: '', email: '', password: '', role: 'USER' });
+      setNewUser({ name: '', phone: '', password: '', role: 'USER' });
       router.refresh();
     } catch (err: any) {
       showToast(err.message, 'error');
@@ -103,7 +103,7 @@ export default function UserList({ initialUsers }: { initialUsers: User[] }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: editUser.name,
-          email: editUser.email,
+          phone: editUser.phone,
           role: editUser.role
         }),
       });
@@ -131,7 +131,7 @@ export default function UserList({ initialUsers }: { initialUsers: User[] }) {
           </div>
           <input 
             type="text"
-            placeholder="Buscar piloto por nome ou e-mail..."
+            placeholder="Buscar piloto por nome ou whatsapp..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-red-500 rounded-2xl py-4 pl-12 pr-6 text-sm font-medium outline-none transition-all placeholder:text-zinc-600"
@@ -192,8 +192,8 @@ export default function UserList({ initialUsers }: { initialUsers: User[] }) {
               <div className="space-y-1 mb-6">
                 <h3 className="text-white font-black uppercase tracking-wide truncate">{user.name}</h3>
                 <div className="flex items-center gap-2 text-zinc-500 text-xs">
-                  <Mail className="w-3 h-3" />
-                  <span className="truncate">{user.email}</span>
+                  <Zap className="w-3 h-3" />
+                  <span className="truncate">{user.phone}</span>
                 </div>
               </div>
 
@@ -242,8 +242,8 @@ export default function UserList({ initialUsers }: { initialUsers: User[] }) {
                   <input type="text" placeholder="Ex: João Silva" value={newUser.name} onChange={e => setNewUser({...newUser, name: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 focus:border-purple-500 rounded-2xl px-5 py-4 text-sm text-white outline-none transition" />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-2 block">E-mail</label>
-                  <input type="email" placeholder="piloto@exemplo.com" value={newUser.email} onChange={e => setNewUser({...newUser, email: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 focus:border-purple-500 rounded-2xl px-5 py-4 text-sm text-white outline-none transition" />
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-2 block">WhatsApp</label>
+                  <input type="text" placeholder="839..." value={newUser.phone} onChange={e => setNewUser({...newUser, phone: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 focus:border-purple-500 rounded-2xl px-5 py-4 text-sm text-white outline-none transition" />
                 </div>
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-2 block">Senha Provisória</label>
@@ -308,8 +308,8 @@ export default function UserList({ initialUsers }: { initialUsers: User[] }) {
                   <input type="text" value={editUser.name} onChange={e => setEditUser({...editUser, name: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 focus:border-purple-500 rounded-2xl px-5 py-4 text-sm text-white outline-none transition" />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-2 block">E-mail de Contato</label>
-                  <input type="email" value={editUser.email} onChange={e => setEditUser({...editUser, email: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 focus:border-purple-500 rounded-2xl px-5 py-4 text-sm text-white outline-none transition" />
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-2 block">WhatsApp</label>
+                  <input type="text" value={editUser.phone} onChange={e => setEditUser({...editUser, phone: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 focus:border-purple-500 rounded-2xl px-5 py-4 text-sm text-white outline-none transition" />
                 </div>
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-2 block">Cargo / Nível de Acesso</label>

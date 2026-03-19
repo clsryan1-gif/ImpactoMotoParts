@@ -78,7 +78,7 @@ export default function LandingPage() {
                   </Link>
                 )}
                 <Link href="/meus-pedidos" className="hidden sm:block text-zinc-400 hover:text-white text-xs font-medium tracking-wider transition">
-                  Olá, <strong className="text-white">{session.user?.name || session.user?.email?.split('@')[0]}</strong>
+                  Olá, <strong className="text-white">{session.user?.name || "Piloto"}</strong>
                 </Link>
                 <button onClick={() => signOut()} className="text-zinc-500 hover:text-red-500 text-[10px] md:text-xs tracking-wider transition">SAIR</button>
               </div>

@@ -10,7 +10,7 @@ export default async function AdminUsersPage() {
     select: {
       id: true,
       name: true,
-      email: true,
+      phone: true,
       role: true,
       createdAt: true,
       orders: {
@@ -34,7 +34,7 @@ export default async function AdminUsersPage() {
     return {
       id: user.id,
       name: user.name || "Piloto sem nome",
-      email: user.email,
+      phone: user.phone,
       role: user.role,
       createdAt: user.createdAt.toISOString(),
       ordersCount,

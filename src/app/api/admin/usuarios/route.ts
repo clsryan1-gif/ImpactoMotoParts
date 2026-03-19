@@ -19,7 +19,7 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        email: true,
+        phone: true,
         role: true,
         createdAt: true,
         orders: {
@@ -38,13 +38,13 @@ export async function GET() {
     const usersWithStats = users.map(user => {
       const ordersCount = user.orders.length;
       const totalSpent = user.orders
-        .filter(o => o.status === "PAGO")
-        .reduce((sum, o) => sum + o.total, 0);
+        .filter((o: any) => o.status === "PAGO")
+        .reduce((sum: number, o: any) => sum + o.total, 0);
 
       return {
         id: user.id,
         name: user.name || "Piloto sem nome",
-        email: user.email,
+        phone: user.phone,
         role: user.role,
         createdAt: user.createdAt,
         ordersCount,
@@ -67,19 +67,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
     }
 
-    const { name, email, password, role } = await req.json();
+    const { name, phone, password, role } = await req.json();
 
-    if (!name || !email || !password) {
+    if (!name || !phone || !password) {
       return NextResponse.json({ message: "Campos obrigatórios ausentes" }, { status: 400 });
     }
 
     // Verifica se usuário já existe
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { phone }
     });
 
     if (existingUser) {
-      return NextResponse.json({ message: "E-mail já cadastrado" }, { status: 400 });
+      return NextResponse.json({ message: "WhatsApp já cadastrado" }, { status: 400 });
     }
 
     // Hash da senha
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     const newUser = await prisma.user.create({
       data: {
         name,
-        email,
+        phone,
         password: hashedPassword,
         role: role || "USER"
       }

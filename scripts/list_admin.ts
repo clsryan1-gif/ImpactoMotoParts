@@ -13,7 +13,7 @@ async function main() {
       select: {
         id: true,
         name: true,
-        email: true,
+        phone: true,
         role: true,
         createdAt: true
       }
@@ -23,7 +23,7 @@ async function main() {
       console.log('Nenhum administrador encontrado.');
     } else {
       admins.forEach(admin => {
-        console.log(`[${admin.id.substring(0, 8)}] ${admin.name} <${admin.email}> - Role: ${admin.role}`);
+        console.log(`[${admin.id.substring(0, 8)}] ${admin.name} <${admin.phone}> - Role: ${admin.role}`);
       });
     }
 

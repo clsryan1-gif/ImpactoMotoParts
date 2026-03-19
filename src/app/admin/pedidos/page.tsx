@@ -8,7 +8,7 @@ export default async function AdminPedidos() {
   const pedidos = await prisma.order.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
-      user: { select: { name: true, email: true } },
+      user: { select: { name: true, phone: true } },
       items: { include: { product: { select: { nome: true } } } }
     }
   });
