@@ -29,10 +29,16 @@ export default function CadastroPage() {
         body: JSON.stringify({ name, phone, password }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        data = null;
+      }
 
       if (!res.ok) {
-        const errorMsg = data.error ? `${data.message}: ${data.error}` : (data.message || 'Erro ao cadastrar');
+        const errorMsg = data?.error ? `${data.message}: ${data.error}` : (data?.message || `Erro ${res.status}: ${text.substring(0, 100)}`);
         throw new Error(errorMsg);
       }
 
