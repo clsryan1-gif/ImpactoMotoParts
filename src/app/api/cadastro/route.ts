@@ -46,6 +46,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ message: "Piloto cadastrado com sucesso", user: { phone: user.phone } }, { status: 201 });
   } catch (err: any) {
-    return NextResponse.json({ message: "Erro interno", error: err.message }, { status: 500 });
+    console.error("ERRO NO CADASTRO:", err);
+    return NextResponse.json({ 
+      message: "Erro interno", 
+      error: err.message,
+      code: err.code 
+    }, { status: 500 });
   }
 }

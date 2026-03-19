@@ -96,7 +96,7 @@ export default function LoginPage() {
                   <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">WhatsApp do Piloto</label>
                   <input 
                     type="text" required
-                    value={phone} onChange={e => setPhone(e.target.value)}
+                    value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
                     className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-3.5 outline-none focus:border-impacto-orange transition-all text-sm"
                     placeholder="ex: 558396248424"
                   />
