@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function LoginPage() {
 
     const res = await signIn('credentials', {
       redirect: false,
-      email,
+      phone,
       password,
     });
 
@@ -93,12 +93,12 @@ export default function LoginPage() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">E-mail do Piloto</label>
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">WhatsApp do Piloto</label>
                   <input 
-                    type="email" required
-                    value={email} onChange={e => setEmail(e.target.value)}
+                    type="text" required
+                    value={phone} onChange={e => setPhone(e.target.value)}
                     className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-3.5 outline-none focus:border-impacto-orange transition-all text-sm"
-                    placeholder="ex: voce@impacto.com.br"
+                    placeholder="ex: 558396248424"
                   />
                 </div>
                 

@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 export default function CadastroPage() {
   const router = useRouter();
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [msg, setMsg] = useState('');
@@ -26,7 +26,7 @@ export default function CadastroPage() {
       const res = await fetch('/api/cadastro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, phone, password }),
       });
 
       const data = await res.json();
@@ -123,12 +123,12 @@ export default function CadastroPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">E-mail para Contato</label>
+                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">WhatsApp do Piloto</label>
                 <input 
-                  type="email" required
-                  value={email} onChange={e => setEmail(e.target.value)}
+                  type="text" required
+                  value={phone} onChange={e => setPhone(e.target.value)}
                   className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-3.5 outline-none focus:border-impacto-orange focus:ring-1 focus:ring-impacto-orange/20 transition-all text-sm"
-                  placeholder="piloto@impacto.com.br"
+                  placeholder="Ex: 558396248424"
                 />
               </div>
               

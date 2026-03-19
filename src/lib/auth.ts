@@ -9,16 +9,16 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "seu@email.com" },
+        phone: { label: "WhatsApp", type: "text", placeholder: "55839..." },
         password: { label: "Senha", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("E-mail e senha são obrigatórios.");
+        if (!credentials?.phone || !credentials?.password) {
+          throw new Error("Telefone e senha são obrigatórios.");
         }
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { phone: credentials.phone },
         });
 
         if (!user) {
@@ -34,7 +34,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           name: user.name,
-          email: user.email,
+          phone: user.phone,
           role: user.role,
         };
       }

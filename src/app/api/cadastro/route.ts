@@ -5,18 +5,18 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, password } = body;
+    const { name, phone, password } = body;
 
-    if (!name || !email || !password) {
+    if (!name || !phone || !password) {
       return NextResponse.json({ message: "Dados incompletos" }, { status: 400 });
     }
 
     const exists = await prisma.user.findUnique({
-      where: { email }
+      where: { phone }
     });
 
     if (exists) {
-      return NextResponse.json({ message: "E-mail já está em uso" }, { status: 400 });
+      return NextResponse.json({ message: "Este WhatsApp já está em uso" }, { status: 400 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -24,13 +24,13 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.create({
       data: {
         name,
-        email,
+        phone,
         password: hashedPassword,
         role: "USER" // Default
       }
     });
 
-    return NextResponse.json({ message: "Usuário criado com sucesso", user: { email: user.email } }, { status: 201 });
+    return NextResponse.json({ message: "Piloto cadastrado com sucesso", user: { phone: user.phone } }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ message: "Erro interno", error: err.message }, { status: 500 });
   }
