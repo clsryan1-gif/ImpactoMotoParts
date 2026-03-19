@@ -22,6 +22,9 @@ const actsChannel = typeof window !== 'undefined' ? new BroadcastChannel('impact
 export default function ActivityLogger() {
   const { data: session } = useSession();
   const [startTime, setStartTime] = useState<Date | null>(null);
+  const [logs, setLogs] = useState<ActivityLog[]>([]);
+  const [isOpen, setIsOpen] = useState(true);
+  const [isMinimized, setIsMinimized] = useState(false);
   const pathname = usePathname();
   const scrollRef = useRef<HTMLDivElement>(null);
 
