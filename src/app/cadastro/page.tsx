@@ -32,7 +32,8 @@ export default function CadastroPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || 'Erro ao cadastrar');
+        const errorMsg = data.error ? `${data.message}: ${data.error}` : (data.message || 'Erro ao cadastrar');
+        throw new Error(errorMsg);
       }
 
       setMsg('Conta acelerada com sucesso! Redirecionando para as pistas...');
