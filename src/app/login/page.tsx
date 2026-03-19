@@ -93,7 +93,7 @@ export default function LoginPage() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">WhatsApp do Piloto</label>
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Número cadastrado no site</label>
                   <input 
                     type="text" required
                     value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
