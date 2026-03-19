@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+export const dynamic = 'force-dynamic';
 import InventoryList from "@/components/InventoryList";
 import { Package, Plus } from "lucide-react";
 import Link from "next/link";

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+export const dynamic = 'force-dynamic';
 import { ShoppingCart, Calendar, Trash2, AlertCircle } from "lucide-react";
 import OrderStatusChanger from "@/components/OrderStatusChanger";
 import OrderListAdmin from "@/components/OrderListAdmin";
