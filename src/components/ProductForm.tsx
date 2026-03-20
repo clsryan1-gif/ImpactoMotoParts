@@ -121,6 +121,12 @@ export default function ProductForm() {
                     const file = e.target.files?.[0];
                     if (!file) return;
 
+                    // Limite de 4MB para Vercel
+                    if (file.size > 4 * 1024 * 1024) {
+                      showToast('Arquivo muito grande. Limite de 4MB.', 'error');
+                      return;
+                    }
+
                     const formData = new FormData();
                     formData.append('file', file);
 

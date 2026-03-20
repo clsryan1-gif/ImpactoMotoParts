@@ -19,24 +19,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Nenhum arquivo enviado" }, { status: 400 });
     }
 
+    // Converter para buffer para gerar Base64
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    
+    // Transformar em Data URL (Base64)
+    const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`;
 
-    // Nome único para evitar sobreposição
-    const filename = `${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
-    const uploadDir = path.join(process.cwd(), "public/uploads");
-
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    const filePath = path.join(uploadDir, filename);
-    fs.writeFileSync(filePath, buffer);
-
-    const publicUrl = `/uploads/${filename}`;
-
-    return NextResponse.json({ url: publicUrl });
+    return NextResponse.json({ url: base64Image });
   } catch (error) {
-    return NextResponse.json({ message: "Erro ao processar upload" }, { status: 500 });
+    console.error("Erro no upload:", error);
+    return NextResponse.json({ message: "Erro ao processar imagem para o banco" }, { status: 500 });
   }
 }
