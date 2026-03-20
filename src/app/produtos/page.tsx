@@ -167,7 +167,7 @@ export default function ProdutosPage() {
               <Link href="/meus-pedidos" className="hidden sm:flex flex-col items-end mr-2 hover:opacity-80 transition-opacity">
                 <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Meus Pedidos</span>
                 <span className="text-xs text-white font-black truncate max-w-[100px]">{session.user?.name || "Piloto"}</span>
-                <button onClick={(e) => { e.preventDefault(); signOut(); }} className="text-[9px] text-red-500 hover:text-red-400 font-bold mt-0.5">Sair</button>
+                <button onClick={(e) => { e.preventDefault(); signOut({ callbackUrl: '/', redirect: true }); }} className="text-[9px] text-red-500 hover:text-red-400 font-bold mt-0.5">Sair</button>
               </Link>
             ) : (
               <Link href="/login" className="hidden sm:block mr-2 text-xs font-bold text-zinc-400 hover:text-white transition">ENTRAR</Link>
