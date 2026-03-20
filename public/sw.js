@@ -33,20 +33,43 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Estratégia: Stale-While-Revalidate para maior velocidade no PC do Ryan
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // 1. IGNORAR COMPLETAMENTE: API e Autenticação (Sempre rede)
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/_next/data/')) {
+    return; 
+  }
+
+  // 2. ESTRATÉGIA: Network-First para Páginas (HTML)
+  // Tenta rede primeiro para garantir a sessão. Se falhar, usa o cache.
+  if (request.mode === 'navigate' || (request.method === 'GET' && request.headers.get('accept').includes('text/html'))) {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
           const cacheCopy = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, cacheCopy);
+            cache.put(request, cacheCopy);
+          });
+          return networkResponse;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // 3. ESTRATÉGIA: Stale-While-Revalidate para Ativos Estáticos (JS, CSS, Imagens)
+  event.respondWith(
+    caches.match(request).then((cachedResponse) => {
+      const fetchPromise = fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200 && request.method === 'GET') {
+          const cacheCopy = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, cacheCopy);
           });
         }
         return networkResponse;
-      }).catch(() => {
-        // Fallback offline se necessário
-      });
+      }).catch(() => {});
 
       return cachedResponse || fetchPromise;
     })
