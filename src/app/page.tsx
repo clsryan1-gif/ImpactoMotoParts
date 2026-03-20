@@ -1,15 +1,33 @@
 'use client';
 
 import React from 'react';
-import { MessageCircle, Menu, ChevronRight, Wrench, Award, Truck, Gauge } from 'lucide-react';
+import { 
+  MessageCircle, 
+  Menu, 
+  ChevronRight, 
+  Wrench, 
+  Award, 
+  Truck, 
+  Gauge, 
+  ShieldCheck, 
+  Zap, 
+  Package, 
+  Smartphone, 
+  X,
+  Star,
+  CheckCircle2,
+  Clock,
+  ArrowRight,
+  Shield 
+} from "lucide-react";
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import Header from "@/components/Header";
 
 export default function LandingPage() {
   const { data: session } = useSession();
-
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -22,96 +40,6 @@ export default function LandingPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col bg-zinc-950 text-zinc-50 font-sans selection:bg-impacto-red selection:text-white overflow-x-hidden">
-
-
-      {/* HEADER */}
-      <motion.header 
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="sticky top-0 z-50 glass-premium border-b border-white/5"
-        suppressHydrationWarning
-      >
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <motion.div
-              whileHover={{ rotate: -5, scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-              className="relative h-10 md:h-14 w-32 md:w-40"
-            >
-              <Image 
-                src="/logo.png" 
-                alt="Impacto" 
-                fill
-                priority
-                quality={80}
-                className="object-contain" 
-              />
-            </motion.div>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-10 font-medium text-sm tracking-widest uppercase text-zinc-400">
-            <Link href="/" className="text-white relative group">
-              HOME
-              <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-red-600 rounded-full"></span>
-            </Link>
-            <Link 
-              href={session ? "/produtos" : "/login"} 
-              className="hover:text-white transition-colors relative group"
-            >
-              CATÁLOGO
-              <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-red-600 rounded-full transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-3 md:gap-4">
-            {session ? (
-              <div className="flex items-center gap-2 md:gap-4">
-                {(session.user as any)?.role === 'ADMIN' && (
-                  <Link href="/admin">
-                    <span className="hidden sm:inline-block text-red-500 font-bold tracking-widest text-xs border border-red-500/50 px-3 py-1.5 rounded-full hover:bg-red-500/10 transition">
-                      PAINEL ADMIN
-                    </span>
-                    <span className="sm:hidden text-red-500 font-bold tracking-widest text-[10px] border border-red-500/50 px-2 py-1 rounded hover:bg-red-500/10 transition">
-                      ADMIN
-                    </span>
-                  </Link>
-                )}
-                <Link href="/meus-pedidos" className="hidden sm:block text-zinc-400 hover:text-white text-xs font-medium tracking-wider transition">
-                  Olá, <strong className="text-white">{session.user?.name || "Piloto"}</strong>
-                </Link>
-                <button onClick={() => signOut({ callbackUrl: '/', redirect: true })} className="text-zinc-500 hover:text-red-500 text-[10px] md:text-xs tracking-wider transition">SAIR</button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link href="/login">
-                  <span className="text-zinc-400 hover:text-white text-[10px] md:text-xs font-bold tracking-widest transition-all duration-300 border border-zinc-700 px-3 py-1.5 rounded-full hover:border-zinc-400 hover:bg-zinc-800/50">
-                    ENTRAR
-                  </span>
-                </Link>
-                <Link href="/cadastro">
-                  <span className="text-zinc-400 hover:text-white text-[10px] md:text-xs font-bold tracking-widest transition-all duration-300 border border-zinc-700 px-3 py-1.5 rounded-full hover:border-zinc-400 hover:bg-zinc-800/50">
-                    CADASTRO
-                  </span>
-                </Link>
-              </div>
-            )}
-
-            <Link href={session ? "/produtos" : "/login"}>
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative overflow-hidden group flex items-center gap-1 md:gap-2 bg-yellow-500 hover:bg-yellow-400 text-zinc-950 px-3 py-1.5 md:px-5 md:py-2 text-[10px] md:text-sm rounded-full font-black tracking-wider transition-all duration-300 shadow-[0_0_20px_rgba(234,179,8,0.3)]"
-              >
-                <span className="relative z-10 hidden sm:inline">VER CATÁLOGO ONLINE</span>
-                <span className="relative z-10 sm:hidden">CATÁLOGO</span>
-                <ChevronRight className="w-3 h-3 md:w-4 md:h-4 relative z-10" />
-                <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"></div>
-              </motion.button>
-            </Link>
-          </div>
-        </div>
-      </motion.header>
 
       {/* HERO SECTION */}
       <section id="home" className="relative pt-0 pb-32 overflow-hidden flex flex-col items-center">

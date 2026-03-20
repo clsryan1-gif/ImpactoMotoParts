@@ -6,6 +6,7 @@ import Providers from "@/components/Providers";
 import RegisterSW from "@/components/RegisterSW";
 import ActivityLogger from "@/components/ActivityLogger";
 import PWAInstall from "@/components/PWAInstall";
+import Header from "@/components/Header";
 
 const bebasNeue = Bebas_Neue({
   variable: "--font-bebas",
@@ -65,6 +66,7 @@ export default function RootLayout({
           <RegisterSW />
           <PWAInstall />
           <ActivityLogger />
+          <Header />
           <PageTransition>{children}</PageTransition>
         </Providers>
       </body>

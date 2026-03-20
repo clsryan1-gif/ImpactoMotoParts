@@ -9,6 +9,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import ProdutoCard from '@/components/ProdutoCard';
 import { ProductSkeleton, CategorySkeleton } from '@/components/ProductSkeleton';
+import Header from '@/components/Header';
 
 // ===================================================
 // Catálogo de Produtos
@@ -126,81 +127,6 @@ export default function ProdutosPage() {
          <div className="absolute -top-[10%] -right-[5%] w-[600px] h-[600px] bg-red-600/10 rounded-full blur-[80px] mix-blend-screen"></div>
          <div className="absolute -bottom-[10%] -left-[5%] w-[400px] h-[400px] bg-impacto-orange/10 rounded-full blur-[60px] mix-blend-screen"></div>
       </div>
-
-      {/* HEADER */}
-      <motion.header 
-        initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.5, ease: "easeOut" }}
-        className="sticky top-0 z-50 glass-premium border-b border-white/5"
-        suppressHydrationWarning
-      >
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          <Link href="/">
-            <motion.div 
-              whileHover={{ rotate: -5, scale: 1.05 }} 
-              className="relative h-10 md:h-12 w-24 md:w-32 cursor-pointer"
-            >
-              <Image 
-                src="/logo.png" 
-                alt="Impacto Moto Parts" 
-                fill 
-                className="object-contain opacity-100" 
-                priority
-                quality={100}
-              />
-            </motion.div>
-          </Link>
-
-          <div className="flex-1 max-w-lg relative hidden md:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-            <input
-              type="text"
-              value={busca}
-              onChange={e => setBusca(e.target.value)}
-              placeholder="Buscar peça ou compatibilidade..."
-              className="w-full bg-zinc-900 border border-zinc-700 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-all shadow-inner"
-            />
-          </div>
-
-          <div className="flex items-center gap-3 md:gap-4">
-            {/* Status do Usuário */}
-            {session ? (
-              <Link href="/meus-pedidos" className="hidden sm:flex flex-col items-end mr-2 hover:opacity-80 transition-opacity">
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Meus Pedidos</span>
-                <span className="text-xs text-white font-black truncate max-w-[100px]">{session.user?.name || "Piloto"}</span>
-                <button onClick={(e) => { e.preventDefault(); signOut({ callbackUrl: '/', redirect: true }); }} className="text-[9px] text-red-500 hover:text-red-400 font-bold mt-0.5">Sair</button>
-              </Link>
-            ) : (
-              <Link href="/login" className="hidden sm:block mr-2 text-xs font-bold text-zinc-400 hover:text-white transition">ENTRAR</Link>
-            )}
-
-            <Link href="/checkout">
-              <motion.div 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="relative flex items-center gap-2 bg-gradient-to-r from-impacto-yellow to-impacto-orange text-zinc-950 px-5 py-2.5 rounded-xl font-black transition-all text-sm shadow-[0_0_20px_rgba(255,102,0,0.4)] border-b-4 border-impacto-red"
-              >
-                <ShoppingCart className="w-5 h-5 text-zinc-950" />
-                <span className="hidden sm:inline tracking-widest">CARRINHO</span>
-                
-                <AnimatePresence>
-                  {carrinho.length > 0 && (
-                    <motion.span 
-                      key={carrinho.length}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      transition={{ duration: 0.1 }}
-                      className="absolute -top-2 -right-2 bg-white text-impacto-red text-xs font-black w-6 h-6 rounded-full flex items-center justify-center shadow-lg border-2 border-impacto-orange"
-                    >
-                      {carrinho.length}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            </Link>
-          </div>
-        </div>
-      </motion.header>
 
       {/* BUSCA MOBILE */}
       <motion.div 
