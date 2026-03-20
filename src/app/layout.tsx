@@ -5,6 +5,7 @@ import PageTransition from "@/components/PageTransition";
 import Providers from "@/components/Providers";
 import RegisterSW from "@/components/RegisterSW";
 import ActivityLogger from "@/components/ActivityLogger";
+import PWAInstall from "@/components/PWAInstall";
 
 const bebasNeue = Bebas_Neue({
   variable: "--font-bebas",
@@ -62,6 +63,7 @@ export default function RootLayout({
       <body className={`${bebasNeue.variable} ${blackOpsOne.variable} antialiased`}>
         <Providers>
           <RegisterSW />
+          <PWAInstall />
           <ActivityLogger />
           <PageTransition>{children}</PageTransition>
         </Providers>
