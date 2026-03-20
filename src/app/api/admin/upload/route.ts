@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     // Upload via API REST direta do Supabase
     const uploadRes = await fetch(
-      `${SUPABASE_URL}/storage/v1/object/impactomotoparts/${filePath}`,
+      `${SUPABASE_URL}/storage/v1/object/Impactomotoparts/${filePath}`,
       {
         method: 'POST',
         headers: {
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     }
 
     // URL pública final
-    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/impactomotoparts/${filePath}`;
+    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/Impactomotoparts/${filePath}`;
 
     return NextResponse.json({ url: publicUrl });
   } catch (error: any) {

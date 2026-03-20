@@ -24,13 +24,13 @@ export async function GET(req: NextRequest) {
     if (!SUPABASE_URL || !SUPABASE_KEY) {
       return NextResponse.json({ 
         message: "ERRO: Variáveis de ambiente faltando!",
-        check
+        check: { ...check, bucket: "Impactomotoparts" }
       });
     }
 
-    // Tentar buscar informações de TODOS os buckets para ver o nome correto
+    // Tentar buscar informações do bucket exato para confirmar
     const res = await fetch(
-      `${SUPABASE_URL}/storage/v1/bucket`,
+      `${SUPABASE_URL}/storage/v1/bucket/Impactomotoparts`,
       {
         headers: {
           'Authorization': `Bearer ${SUPABASE_KEY}`,
