@@ -1,37 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, Zap, Lock, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function LoginPage() {
+// Componente Interno com a lógica
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errorVisible, setErrorVisible] = useState(searchParams.get('error') ? 'Credenciais inválidas. Verifique seu número e senha.' : '');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setErrorVisible('');
 
-    const res = await signIn('credentials', {
-      redirect: false,
+    // Usar redirect: true para o NextAuth gerenciar a sessão de forma nativa e estável
+    await signIn('credentials', {
+      redirect: true,
+      callbackUrl: '/',
       phone,
       password,
     });
-
-    if (res?.error) {
-      setError(res.error);
-      setLoading(false);
-    } else {
-      window.location.href = '/';
-    }
+    
+    // O NextAuth fará o redirecionamento automático se os dados estiverem corretos.
+    // Se falhar, ele redirecionará para cá com ?error=...
   };
 
   return (
@@ -85,9 +85,9 @@ export default function LoginPage() {
                 </h2>
               </div>
 
-              {error && (
+              {errorVisible && (
                 <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black p-3 rounded-xl mb-6 text-center uppercase tracking-widest">
-                  🚨 {error}
+                  🚨 {errorVisible}
                 </div>
               )}
 
@@ -171,5 +171,17 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center">
+        <div className="text-impacto-orange font-black tracking-widest animate-pulse uppercase">Carregando Box...</div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
