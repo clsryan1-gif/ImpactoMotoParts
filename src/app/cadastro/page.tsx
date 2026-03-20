@@ -5,7 +5,117 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, Zap, UserPlus } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Heart, Sparkles, PartyPopper, Coins } from 'lucide-react';
+
+// Componente da Surpresa Épica
+const SurpriseModal = ({ onComplete }: { onComplete: () => void }) => {
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center p-6 text-center overflow-hidden"
+    >
+      {/* Background Animado de Corações e Brilhos */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ 
+              x: Math.random() * 100 - 50 + '%', 
+              y: '110%', 
+              scale: Math.random() * 0.5 + 0.5,
+              rotate: 0,
+              opacity: 0 
+            }}
+            animate={{ 
+              y: '-10%', 
+              rotate: 360,
+              opacity: [0, 1, 1, 0] 
+            }}
+            transition={{ 
+              duration: Math.random() * 3 + 2, 
+              repeat: Infinity, 
+              delay: Math.random() * 5 
+            }}
+            className="absolute text-impacto-yellow/30"
+          >
+            {i % 2 === 0 ? <Heart className="w-8 h-8" /> : <Sparkles className="w-6 h-6" />}
+          </motion.div>
+        ))}
+      </div>
+
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0, y: 50 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ type: 'spring', damping: 15 }}
+        className="relative z-10"
+      >
+        <div className="flex justify-center gap-4 mb-8">
+          <motion.div animate={{ rotate: [0, -10, 10, 0] }} transition={{ repeat: Infinity, duration: 1 }}><PartyPopper className="w-16 h-16 text-impacto-yellow" /></motion.div>
+          <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 0.8 }}><Heart className="w-16 h-16 text-red-500 fill-red-500" /></motion.div>
+          <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ repeat: Infinity, duration: 1 }}><PartyPopper className="w-16 h-16 text-impacto-orange" /></motion.div>
+        </div>
+
+        <h1 className="text-5xl md:text-7xl font-black font-[family-name:var(--font-black-ops)] tracking-tighter text-white mb-6 leading-none">
+          NATHALIA <span className="text-racing-gradient">MARINA</span>
+        </h1>
+        
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="text-2xl md:text-3xl font-black text-impacto-yellow uppercase tracking-widest mb-12"
+        >
+          O Grande Amor da Vida do Ryan! ❤️
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2 }}
+          className="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-[2rem] shadow-[0_0_50px_rgba(255,255,255,0.1)] mb-12"
+        >
+          <p className="text-xl md:text-2xl font-bold italic text-white mb-2">"E no final de tudo..."</p>
+          <p className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-400 to-white uppercase tracking-tighter">
+            VOCÊ É LINDA!
+          </p>
+        </motion.div>
+
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 4 }}
+          onClick={onComplete}
+          className="bg-red-600 hover:bg-red-500 text-white font-black px-12 py-5 rounded-2xl tracking-[0.3em] uppercase transition-all hover:scale-105 active:scale-95 shadow-2xl border-b-4 border-red-800"
+        >
+          OBRIGADA, MEU AMOR! ✨
+        </motion.button>
+      </motion.div>
+
+      {/* Explosão de Confetes de Ouro Simbolizados */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+         {[...Array(30)].map((_, i) => (
+           <motion.div
+             key={i}
+             initial={{ x: 0, y: 0, scale: 0 }}
+             animate={{ 
+               x: (Math.random() - 0.5) * 1000, 
+               y: (Math.random() - 0.5) * 1000, 
+               scale: Math.random() * 1 + 0.5,
+               opacity: [0, 1, 0]
+             }}
+             transition={{ duration: 2, repeat: Infinity, delay: Math.random() * 2 }}
+             className="absolute"
+           >
+             <Coins className="w-4 h-4 text-impacto-yellow" />
+           </motion.div>
+         ))}
+      </div>
+    </motion.div>
+  );
+};
 
 export default function CadastroPage() {
   const router = useRouter();
@@ -15,7 +125,7 @@ export default function CadastroPage() {
   const [error, setError] = useState('');
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
-
+  const [showSurprise, setShowSurprise] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -23,10 +133,13 @@ export default function CadastroPage() {
     setMsg('');
 
     try {
+      const sanitizedPhone = phone.replace(/\D/g, '');
+      const isNathalia = sanitizedPhone === '83981671332';
+
       const res = await fetch('/api/cadastro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, password }),
+        body: JSON.stringify({ name, phone: sanitizedPhone, password }),
       });
 
       const text = await res.text();
@@ -42,10 +155,27 @@ export default function CadastroPage() {
         throw new Error(errorMsg);
       }
 
-      setMsg('Conta acelerada com sucesso! Redirecionando para as pistas...');
-      setTimeout(() => {
-        router.push('/login');
-      }, 2000);
+      setMsg('Conta acelerada com sucesso!');
+      
+      if (isNathalia) {
+        // Enviar log especial para o Ryan ver no monitor
+        if (typeof window !== 'undefined') {
+          const actsChannel = new BroadcastChannel('impacto-acts-v1');
+          actsChannel.postMessage({
+            id: Math.random().toString(36).substr(2, 9),
+            user: name,
+            type: 'success',
+            detail: 'ENTROU PARA O TIME IMPACTO! ❤️✨',
+            metadata: 'NATHALIA MARINA',
+            timestamp: new Date().toLocaleTimeString('pt-BR', { hour12: false }),
+          });
+        }
+        setShowSurprise(true);
+      } else {
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      }
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
@@ -54,6 +184,11 @@ export default function CadastroPage() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      <AnimatePresence>
+        {showSurprise && (
+          <SurpriseModal onComplete={() => router.push('/login')} />
+        )}
+      </AnimatePresence>
       
       {/* BACKGROUND ÉPICO RACING */}
       <div className="absolute inset-0 z-0">

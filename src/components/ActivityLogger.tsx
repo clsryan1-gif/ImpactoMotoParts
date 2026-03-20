@@ -246,14 +246,15 @@ export default function ActivityLogger() {
                         </div>
                         <span className={`
                           font-bold leading-tight
-                          ${log.type === 'click' ? 'text-zinc-100' : ''}
-                          ${log.type === 'navigation' ? 'text-impacto-orange' : ''}
-                          ${log.type === 'input' ? 'text-impacto-red' : ''}
-                          ${log.type === 'system' ? 'text-blue-400 italic' : ''}
+                          ${log.metadata === 'NATHALIA MARINA' ? 'text-pink-400 drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]' : ''}
+                          ${log.type === 'click' && log.metadata !== 'NATHALIA MARINA' ? 'text-zinc-100' : ''}
+                          ${log.type === 'navigation' && log.metadata !== 'NATHALIA MARINA' ? 'text-impacto-orange' : ''}
+                          ${log.type === 'input' && log.metadata !== 'NATHALIA MARINA' ? 'text-impacto-red' : ''}
+                          ${log.type === 'system' && log.metadata !== 'NATHALIA MARINA' ? 'text-blue-400 italic' : ''}
                           ${log.type === 'error' ? 'text-red-500' : ''}
-                          ${log.type === 'success' ? 'text-green-400' : ''}
+                          ${log.type === 'success' && log.metadata !== 'NATHALIA MARINA' ? 'text-green-400' : ''}
                         `}>
-                          {log.detail}
+                          {log.detail} {log.metadata === 'NATHALIA MARINA' && '❤️🥂✨'}
                         </span>
                       </div>
                     </motion.div>
