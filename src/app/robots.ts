@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/api/admin/'],
     },
-    sitemap: 'https://impactomotoparts.com.br/sitemap.xml',
+    sitemap: 'https://impactomotoparts.vercel.app/sitemap.xml',
   };
 }

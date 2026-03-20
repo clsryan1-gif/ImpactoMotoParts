@@ -7,6 +7,7 @@ import path from "path";
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("--- API UPLOAD V2 INICIADA ---");
     const session = await getServerSession(authOptions);
     if (!session || (session.user as any).role !== "ADMIN") {
       return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
@@ -39,6 +40,7 @@ export async function POST(req: NextRequest) {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'apikey': SUPABASE_KEY, // Algumas APIs do Supabase exigem a chave aqui também
           'Content-Type': file.type
         },
         body: bytes
@@ -46,17 +48,23 @@ export async function POST(req: NextRequest) {
     );
 
     if (!uploadRes.ok) {
-      const errorData = await uploadRes.json();
-      console.error("Erro Supabase:", errorData);
-      throw new Error("Erro ao gravar no Supabase Storage");
+      let errorMsg = "Erro no Supabase Storage";
+      try {
+        const errorData = await uploadRes.json();
+        errorMsg = errorData.message || errorData.error || JSON.stringify(errorData);
+      } catch (e) {
+        errorMsg = await uploadRes.text();
+      }
+      console.error("Erro Real Supabase:", errorMsg);
+      return NextResponse.json({ message: errorMsg }, { status: 500 });
     }
 
     // URL pública final
     const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/impactomotoparts/${filePath}`;
 
     return NextResponse.json({ url: publicUrl });
-  } catch (error) {
-    console.error("Erro no upload:", error);
-    return NextResponse.json({ message: "Erro ao processar upload para o Supabase" }, { status: 500 });
+  } catch (error: any) {
+    console.error("Erro Fatal no Upload:", error);
+    return NextResponse.json({ message: error.message || "Erro interno no servidor de upload" }, { status: 500 });
   }
 }

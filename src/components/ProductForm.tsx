@@ -131,19 +131,24 @@ export default function ProductForm() {
                     formData.append('file', file);
 
                     try {
-                      showToast('Enviando foto...', 'info');
-                      const res = await fetch('/api/admin/upload', {
-                        method: 'POST',
-                        body: formData
-                      });
+                       console.log("Iniciando upload V2...");
+                       showToast('Enviando foto...', 'info');
+                       const res = await fetch('/api/admin/upload', {
+                         method: 'POST',
+                         body: formData
+                       });
 
-                      if (!res.ok) throw new Error();
-                      const data = await res.json();
-                      setImagem(data.url);
-                      showToast('Foto enviada com sucesso!', 'success');
-                    } catch (err) {
-                      showToast('Erro ao enviar foto.', 'error');
-                    }
+                       if (!res.ok) {
+                         const errData = await res.json();
+                         throw new Error(errData.message || 'Erro no servidor Supabase');
+                       }
+                       const data = await res.json();
+                       setImagem(data.url);
+                       showToast('Foto enviada com sucesso!', 'success');
+                     } catch (err: any) {
+                       console.error("Erro no upload V2:", err);
+                       showToast('Erro ao enviar foto (V2): ' + (err.message || 'Sem detalhes'), 'error');
+                     }
                   }}
                 />
               </label>

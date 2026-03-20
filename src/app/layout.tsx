@@ -28,14 +28,14 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://impactomotoparts.com.br'),
+  metadataBase: new URL('https://impactomotoparts.vercel.app'),
   title: "Impacto Moto Parts | Elite em Performance",
   description: "As melhores peças e acessórios para sua moto. Alta durabilidade, performance e entrega rápida em todo Brasil.",
   manifest: "/manifest.json",
   openGraph: {
     title: "Impacto Moto Parts | Elite em Performance",
     description: "Peças de alta durabilidade e performance para sua moto.",
-    url: "https://impactomotoparts.com.br",
+    url: "https://impactomotoparts.vercel.app",
     siteName: "Impacto Moto Parts",
     images: [
       {
