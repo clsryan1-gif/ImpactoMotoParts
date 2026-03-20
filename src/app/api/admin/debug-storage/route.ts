@@ -28,9 +28,9 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Tentar buscar informações do bucket para testar chaves
+    // Tentar buscar informações de TODOS os buckets para ver o nome correto
     const res = await fetch(
-      `${SUPABASE_URL}/storage/v1/bucket/impactomotoparts`,
+      `${SUPABASE_URL}/storage/v1/bucket`,
       {
         headers: {
           'Authorization': `Bearer ${SUPABASE_KEY}`,
