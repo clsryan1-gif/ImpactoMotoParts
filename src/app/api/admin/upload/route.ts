@@ -19,16 +19,44 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Nenhum arquivo enviado" }, { status: 400 });
     }
 
-    // Converter para buffer para gerar Base64
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    // Transformar em Data URL (Base64)
-    const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`;
+    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    return NextResponse.json({ url: base64Image });
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+      return NextResponse.json({ 
+        message: "Configuração do Supabase Storage faltando no .env" 
+      }, { status: 500 });
+    }
+
+    const bytes = await file.arrayBuffer();
+    const filename = `${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
+    const filePath = `produtos/${filename}`;
+
+    // Upload via API REST direta do Supabase
+    const uploadRes = await fetch(
+      `${SUPABASE_URL}/storage/v1/object/impactomotoparts/${filePath}`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': file.type
+        },
+        body: bytes
+      }
+    );
+
+    if (!uploadRes.ok) {
+      const errorData = await uploadRes.json();
+      console.error("Erro Supabase:", errorData);
+      throw new Error("Erro ao gravar no Supabase Storage");
+    }
+
+    // URL pública final
+    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/impactomotoparts/${filePath}`;
+
+    return NextResponse.json({ url: publicUrl });
   } catch (error) {
     console.error("Erro no upload:", error);
-    return NextResponse.json({ message: "Erro ao processar imagem para o banco" }, { status: 500 });
+    return NextResponse.json({ message: "Erro ao processar upload para o Supabase" }, { status: 500 });
   }
 }
