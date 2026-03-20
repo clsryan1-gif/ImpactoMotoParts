@@ -36,8 +36,14 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // 1. IGNORAR COMPLETAMENTE: API e Autenticação (Sempre rede)
-  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/_next/data/')) {
+  // 1. IGNORAR COMPLETAMENTE: API, Admin, Checkout e Meus Pedidos (Sempre rede)
+  if (
+    url.pathname.startsWith('/api/') || 
+    url.pathname.startsWith('/_next/data/') ||
+    url.pathname.startsWith('/admin') ||
+    url.pathname.startsWith('/checkout') ||
+    url.pathname.startsWith('/meus-pedidos')
+  ) {
     return; 
   }
 

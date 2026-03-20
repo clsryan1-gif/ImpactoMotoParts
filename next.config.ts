@@ -18,6 +18,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '**.vtexassets.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'fqjezbdywnozgztiqwlx.supabase.co',
       }
     ],
   },

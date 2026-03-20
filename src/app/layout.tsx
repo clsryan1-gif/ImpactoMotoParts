@@ -54,6 +54,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { Analytics } from "@vercel/analytics/react";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -63,6 +65,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${bebasNeue.variable} ${blackOpsOne.variable} antialiased`}>
         <Providers>
+          <Analytics />
           <RegisterSW />
           <PWAInstall />
           <ActivityLogger />
