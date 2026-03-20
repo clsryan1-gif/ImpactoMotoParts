@@ -15,13 +15,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row">
       {/* Sidebar Admin */}
-      <aside className="w-full md:w-64 glass-premium p-6 flex flex-col gap-8 shrink-0 relative z-20">
-        <div className="flex flex-col gap-2">
-          <Link href="/" className="text-zinc-500 hover:text-red-500 flex items-center gap-2 text-xs uppercase font-bold tracking-widest transition mb-4">
+      <aside className="w-full md:w-64 glass-premium p-4 md:p-6 flex flex-row md:flex-col gap-4 md:gap-8 shrink-0 relative z-20 items-center md:items-start justify-between md:justify-start">
+        <div className="flex flex-col md:gap-2">
+          <Link href="/" className="hidden md:flex text-zinc-500 hover:text-red-500 items-center gap-2 text-xs uppercase font-bold tracking-widest transition mb-4">
             <ChevronLeft className="w-4 h-4" /> Sair do Painel
           </Link>
           <Link href="/">
-            <div className="relative h-8 w-32 self-start mb-2 group">
+            <div className="relative h-6 md:h-8 w-24 md:w-32 self-start mb-1 group">
               <Image 
                 src="/logo.png" 
                 alt="Impacto Logo" 
@@ -31,26 +31,26 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               />
             </div>
           </Link>
-          <h2 className="text-red-500 font-bold tracking-widest uppercase text-xs">Admin Dashboard</h2>
+          <h2 className="text-red-500 font-bold tracking-widest uppercase text-[9px] md:text-xs">Admin Dashboard</h2>
         </div>
 
-        <nav className="flex flex-col gap-4 flex-1">
-          <Link href="/admin" className="flex items-center gap-3 text-zinc-400 hover:text-white transition group">
-            <LayoutDashboard className="w-5 h-5 group-hover:text-impacto-yellow transition" />
-            <span className="font-black tracking-widest text-[10px] uppercase">Resumo</span>
+        <nav className="flex flex-row md:flex-col gap-4 md:gap-4">
+          <Link href="/admin" className="flex items-center gap-2 md:gap-3 text-zinc-400 hover:text-white transition group" title="Resumo">
+            <LayoutDashboard className="w-4 h-4 md:w-5 md:h-5 group-hover:text-impacto-yellow transition" />
+            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase hidden sm:inline md:inline">Resumo</span>
           </Link>
-          <Link href="/admin/produtos" className="flex items-center gap-3 text-zinc-400 hover:text-white transition group">
-            <Package className="w-5 h-5 group-hover:text-impacto-orange transition" />
-            <span className="font-black tracking-widest text-[10px] uppercase">Inventário</span>
+          <Link href="/admin/produtos" className="flex items-center gap-2 md:gap-3 text-zinc-400 hover:text-white transition group" title="Estoque">
+            <Package className="w-4 h-4 md:w-5 md:h-5 group-hover:text-impacto-orange transition" />
+            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase hidden sm:inline md:inline">Produtos</span>
           </Link>
-          <Link href="/admin/pedidos" className="flex items-center gap-3 text-zinc-400 hover:text-white transition group">
-            <ShoppingCart className="w-5 h-5 group-hover:text-impacto-yellow transition" />
-            <span className="font-black tracking-widest text-[10px] uppercase">Vendas</span>
+          <Link href="/admin/pedidos" className="flex items-center gap-2 md:gap-3 text-zinc-400 hover:text-white transition group" title="Vendas">
+            <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 group-hover:text-impacto-yellow transition" />
+            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase hidden sm:inline md:inline">Vendas</span>
           </Link>
         </nav>
 
-        <div className="text-xs text-zinc-500 pt-8 border-t border-zinc-800/50 mt-auto">
-          Painel de Controle Interno - Impacto Moto Parts
+        <div className="hidden md:block text-[10px] text-zinc-500 pt-8 border-t border-zinc-800/50 mt-auto">
+          Painel de Controle Interno
         </div>
       </aside>
 
