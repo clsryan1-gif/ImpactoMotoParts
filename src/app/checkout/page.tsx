@@ -33,6 +33,21 @@ export default function CheckoutPage() {
   const [pagamento, setPagamento] = useState('PIX');
   const [loadingCheckout, setLoadingCheckout] = useState(false);
 
+  const total = useMemo(() => carrinho.reduce((a, p) => a + p.preco, 0), [carrinho]);
+  
+  const groupedCart = useMemo(() => {
+    const map = new Map<string, Produto & { quantity: number }>();
+    carrinho.forEach(item => {
+      const id = String(item.id);
+      if (map.has(id)) {
+        map.get(id)!.quantity += 1;
+      } else {
+        map.set(id, { ...item, quantity: 1 });
+      }
+    });
+    return Array.from(map.values());
+  }, [carrinho]);
+
   // Envio direto pelo WhatsApp
   const enviarPedidoWhatsApp = () => {
     if (!carrinho.length) return;
@@ -59,31 +74,26 @@ export default function CheckoutPage() {
 
   // Carrega itens do localStorage
   useEffect(() => {
-    const salvo = localStorage.getItem('@impacto-carrinho');
-    if (salvo) {
-      try {
-        setCarrinho(JSON.parse(salvo));
-      } catch (e) {
-        // Erro silencioso
+    const carregarCarrinho = () => {
+      const salvo = localStorage.getItem('@impacto-carrinho');
+      if (salvo) {
+        try {
+          setCarrinho(JSON.parse(salvo));
+        } catch (e) {}
       }
-    }
-    setCarregando(false);
+      setCarregando(false);
+    };
+
+    carregarCarrinho();
+
+    // Sincronizar entre abas
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === '@impacto-carrinho') carregarCarrinho();
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
-
-  const groupedCart = useMemo(() => {
-    const map = new Map<string, Produto & { quantity: number }>();
-    carrinho.forEach(item => {
-      const id = String(item.id);
-      if (map.has(id)) {
-        map.get(id)!.quantity += 1;
-      } else {
-        map.set(id, { ...item, quantity: 1 });
-      }
-    });
-    return Array.from(map.values());
-  }, [carrinho]);
-
-  const total = useMemo(() => carrinho.reduce((a, p) => a + p.preco, 0), [carrinho]);
 
   // Sincroniza exclusões com o localStorage
   const removerPorId = (id: string | number) => {

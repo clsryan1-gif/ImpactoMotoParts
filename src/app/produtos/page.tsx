@@ -85,12 +85,24 @@ export default function ProdutosPage() {
 
   // Sincronizar carrinho com localStorage na inicialização e nas mudanças
   useEffect(() => {
-    const salvo = localStorage.getItem('@impacto-carrinho');
-    if (salvo) {
-      try {
-        setCarrinho(JSON.parse(salvo));
-      } catch (e) {}
-    }
+    const carregarCarrinho = () => {
+      const salvo = localStorage.getItem('@impacto-carrinho');
+      if (salvo) {
+        try {
+          setCarrinho(JSON.parse(salvo));
+        } catch (e) {}
+      }
+    };
+
+    carregarCarrinho();
+
+    // Sincronizar entre abas
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === '@impacto-carrinho') carregarCarrinho();
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   const adicionar = useCallback((p: Produto) => {

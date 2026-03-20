@@ -30,6 +30,7 @@ export default function LoginPage() {
       setError(res.error);
       setLoading(false);
     } else {
+      router.refresh();
       router.push('/');
     }
   };
@@ -102,8 +103,17 @@ export default function LoginPage() {
                   />
                 </div>
                 
-                <div className="space-y-1.5">
-                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Chave de Acesso</label>
+                <div className="space-y-1.5 relative">
+                  <div className="flex justify-between items-center">
+                    <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Chave de Acesso</label>
+                    <Link 
+                      href="https://wa.me/558396248424?text=Olá, sou piloto da Impacto Moto Parts e esqueci meu acesso. Pode me ajudar a recuperar?" 
+                      target="_blank"
+                      className="text-[9px] font-bold text-impacto-orange hover:text-impacto-yellow transition-colors uppercase tracking-tighter"
+                    >
+                      Esqueci a senha
+                    </Link>
+                  </div>
                   <input 
                     type="password" required
                     value={password} onChange={e => setPassword(e.target.value)}
