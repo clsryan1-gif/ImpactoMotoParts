@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Calendar, AlertCircle, Printer } from "lucide-react";
+import { ShoppingCart, Calendar, AlertCircle, Printer, Trash2 } from "lucide-react";
 import OrderStatusChanger from "./OrderStatusChanger";
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/context/ToastContext';
 import { useRouter } from 'next/navigation';
+import { hideOrder } from '@/app/admin/pedidos/actions';
 
 const BRL = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -136,6 +137,18 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
     printWindow.document.close();
   };
 
+  const handleDelete = async (orderId: string) => {
+    if (!confirm('Deseja realmente apagar este pedido do painel? Ele continuará salvo no banco de dados.')) return;
+    
+    const res = await hideOrder(orderId);
+    if (res.success) {
+      setPedidos(prev => prev.filter(p => p.id !== orderId));
+      showToast('Pedido removido do painel!', 'success');
+    } else {
+      showToast('Erro ao remover pedido.', 'error');
+    }
+  };
+
   const pedidosFiltrados = (filtro === 'TODOS' ? pedidos : pedidos.filter(p => p.status === filtro))
     .filter(p => 
       p.user?.name?.toLowerCase().includes(busca.toLowerCase()) || 
@@ -253,13 +266,21 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
                   <span className="text-[8px] text-zinc-600 uppercase tracking-widest font-black">Via {pedido.paymentType.replace('_', ' ')}</span>
                 </div>
                 
-                <button 
-                  onClick={() => handlePrint(pedido)}
-                  className="p-3 rounded-xl bg-zinc-800/50 hover:bg-blue-500/20 text-zinc-600 hover:text-blue-500 transition-all border border-transparent hover:border-blue-500/20"
-                  title="Imprimir Etiqueta"
-                >
-                  <Printer className="w-4 h-4" />
-                </button>
+                  <button 
+                    onClick={() => handlePrint(pedido)}
+                    className="p-3 rounded-xl bg-zinc-800/50 hover:bg-blue-500/20 text-zinc-600 hover:text-blue-500 transition-all border border-transparent hover:border-blue-500/20"
+                    title="Imprimir Etiqueta"
+                  >
+                    <Printer className="w-4 h-4" />
+                  </button>
+
+                  <button 
+                    onClick={() => handleDelete(pedido.id)}
+                    className="p-3 rounded-xl bg-zinc-800/50 hover:bg-red-500/20 text-zinc-600 hover:text-red-500 transition-all border border-transparent hover:border-red-500/20"
+                    title="Apagar do Painel"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
               </div>
             </div>
           </motion.div>

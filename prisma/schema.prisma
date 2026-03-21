@@ -41,6 +41,7 @@ model Order {
   total       Float
   status      String      @default("PENDENTE")
   paymentType String
+  hidden      Boolean     @default(false)
   createdAt   DateTime    @default(now())
   user        User        @relation(fields: [userId], references: [id])
   items       OrderItem[]

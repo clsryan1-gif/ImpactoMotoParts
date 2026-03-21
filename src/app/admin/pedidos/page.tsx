@@ -6,6 +6,7 @@ import OrderListAdmin from "@/components/OrderListAdmin";
 
 export default async function AdminPedidos() {
   const pedidos = await prisma.order.findMany({
+    where: { hidden: false },
     orderBy: { createdAt: 'desc' },
     include: {
       user: { select: { name: true, phone: true } },

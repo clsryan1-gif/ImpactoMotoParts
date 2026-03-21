@@ -47,10 +47,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 group-hover:text-impacto-yellow transition" />
             <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase hidden sm:inline md:inline">Vendas</span>
           </Link>
-          <Link href="/admin/sql" className="flex items-center gap-2 md:gap-3 text-zinc-400 hover:text-white transition group" title="SQL Editor">
-            <Database className="w-4 h-4 md:w-5 md:h-5 group-hover:text-red-500 transition" />
-            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase hidden sm:inline md:inline">SQL Editor</span>
-          </Link>
         </nav>
 
         <div className="hidden md:block text-[10px] text-zinc-500 pt-8 border-t border-zinc-800/50 mt-auto">

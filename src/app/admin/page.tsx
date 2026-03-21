@@ -16,12 +16,12 @@ export default async function AdminDashboard() {
     const results = await Promise.all([
       prisma.user.count(),
       prisma.product.count(),
-      prisma.order.count(),
+      prisma.order.count({ where: { hidden: false } }),
       prisma.product.findMany({ where: { estoque: { lte: 5 } }, take: 4, orderBy: { estoque: 'asc' } }),
-      prisma.order.findMany({ take: 5, orderBy: { createdAt: 'desc' }, include: { user: { select: { name: true } } } }),
+      prisma.order.findMany({ where: { hidden: false }, take: 5, orderBy: { createdAt: 'desc' }, include: { user: { select: { name: true } } } }),
       (prisma as any).financeiro.aggregate({ _sum: { valor: true }, where: { tipo: "ENTRADA" } }),
       (prisma as any).financeiro.aggregate({ _sum: { valor: true }, where: { tipo: "SAIDA" } }),
-      prisma.order.aggregate({ _sum: { total: true }, where: { status: 'PAGO' } })
+      prisma.order.aggregate({ _sum: { total: true }, where: { status: 'PAGO', hidden: false } })
     ]);
 
     usersCount = results[0];
