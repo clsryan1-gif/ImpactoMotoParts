@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase';
 import { useToast } from '@/context/ToastContext';
 import { useRouter } from 'next/navigation';
 import { hideOrder } from '@/app/admin/pedidos/actions';
+import ConfirmModal from './ConfirmModal';
 
 const BRL = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -15,6 +16,7 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
   const [pedidos, setPedidos] = useState(initialOrders);
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<'TODOS' | 'PENDENTE' | 'PAGO' | 'ENVIADO'>('TODOS');
+  const [modalDelete, setModalDelete] = useState<{ isOpen: boolean, orderId: string | null }>({ isOpen: false, orderId: null });
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -138,11 +140,15 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
   };
 
   const handleDelete = async (orderId: string) => {
-    if (!confirm('Deseja realmente apagar este pedido do painel? Ele continuará salvo no banco de dados.')) return;
+    setModalDelete({ isOpen: true, orderId });
+  };
+
+  const confirmDelete = async () => {
+    if (!modalDelete.orderId) return;
     
-    const res = await hideOrder(orderId);
+    const res = await hideOrder(modalDelete.orderId);
     if (res.success) {
-      setPedidos(prev => prev.filter(p => p.id !== orderId));
+      setPedidos(prev => prev.filter(p => p.id !== modalDelete.orderId));
       showToast('Pedido removido do painel!', 'success');
     } else {
       showToast('Erro ao remover pedido.', 'error');
@@ -285,9 +291,18 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
             </div>
           </motion.div>
         ))}
-      </div>
-    )}
-  </AnimatePresence>
-</div>
+        <ConfirmModal 
+        isOpen={modalDelete.isOpen}
+        onClose={() => setModalDelete({ isOpen: false, orderId: null })}
+        onConfirm={confirmDelete}
+        title="Apagar Pedido?"
+        message="Deseja realmente apagar este pedido do painel? Ele continuará salvo no banco de dados para seu histórico e segurança."
+        confirmLabel="Pode Apagar"
+        cancelLabel="Mantenha aqui"
+      />
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
