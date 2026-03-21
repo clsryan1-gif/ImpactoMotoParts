@@ -32,6 +32,14 @@ export const metadata: Metadata = {
   title: "Impacto Moto Parts | Elite em Performance",
   description: "As melhores peças e acessórios para sua moto. Alta durabilidade, performance e entrega rápida em todo Brasil.",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Impacto Moto",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     title: "Impacto Moto Parts | Elite em Performance",
     description: "Peças de alta durabilidade e performance para sua moto.",

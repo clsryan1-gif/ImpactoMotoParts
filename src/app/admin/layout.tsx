@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Package, ShoppingCart, LayoutDashboard, LogOut, ChevronLeft } from "lucide-react";
+import { Package, ShoppingCart, LayoutDashboard, LogOut, ChevronLeft, Database } from "lucide-react";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -46,6 +46,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/pedidos" className="flex items-center gap-2 md:gap-3 text-zinc-400 hover:text-white transition group" title="Vendas">
             <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 group-hover:text-impacto-yellow transition" />
             <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase hidden sm:inline md:inline">Vendas</span>
+          </Link>
+          <Link href="/admin/sql" className="flex items-center gap-2 md:gap-3 text-zinc-400 hover:text-white transition group" title="SQL Editor">
+            <Database className="w-4 h-4 md:w-5 md:h-5 group-hover:text-red-500 transition" />
+            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase hidden sm:inline md:inline">SQL Editor</span>
           </Link>
         </nav>
 

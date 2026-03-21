@@ -48,26 +48,39 @@ export default function CheckoutPage() {
     return Array.from(map.values());
   }, [carrinho]);
 
-  // Envio direto pelo WhatsApp
-  const enviarPedidoWhatsApp = () => {
+  // Envio direto pelo WhatsApp - FORMATO PDV DETALHADO
+  const enviarPedidoWhatsApp = (orderId?: string, methodOverride?: string) => {
     if (!carrinho.length) return;
     const numero = '558396248424';
     const data = new Date().toLocaleDateString('pt-BR');
     const horaAtual = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const metodoFinal = methodOverride || pagamento;
+    const clienteNome = session?.user?.name || 'Cliente';
 
-    let msg = `🏁 *NOVO PEDIDO — IMPACTO MOTO PARTS*\n`;
-    msg += `🗓️ ${data} às ${horaAtual}\n`;
-    msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    carrinho.forEach((p, i) => {
-      msg += `🔩 *Produto ${i + 1}:* ${p.nome}\n`;
-      msg += `   Categoria: ${p.categoria}\n`;
-      msg += `   Compatibilidade: ${p.compatibilidade}\n`;
-      msg += `   💲 Valor unitário: ${BRL(p.preco)}\n\n`;
+    const metodoLabel: Record<string, string> = {
+      'PIX': 'PIX (Pagamento Instantâneo)',
+      'CARTAO_CREDITO': '💳 Cartão de Crédito',
+      'WHATSAPP': '🟢 Combinar via WhatsApp'
+    };
+
+    let msg = `🏁 *IMPACTO MOTO PARTS — RESUMO DO PEDIDO*\n`;
+    msg += `🆔 *PEDIDO:* #${orderId || 'PENDENTE'}\n`;
+    msg += `🗓️ *DATA:* ${data} às ${horaAtual}\n`;
+    msg += `👤 *CLIENTE:* ${clienteNome}\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    
+    groupedCart.forEach((p, i) => {
+      msg += `📦 *ITEM ${i + 1}* (x${p.quantity})\n`;
+      msg += `   *Peça:* ${p.nome}\n`;
+      msg += `   *Ref:* ${p.categoria}\n`;
+      msg += `   *Subtotal:* ${BRL(p.preco * p.quantity)}\n\n`;
     });
-    msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += `🛒 *Total do pedido: ${BRL(total)}*\n`;
-    msg += `💳 Forma preferida: *A combinar*\n\n`;
-    msg += `Gostaria de confirmar disponibilidade e combinar forma de pagamento. Obrigado!`;
+
+    msg += `━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `💰 *TOTAL A PAGAR: ${BRL(total)}*\n`;
+    msg += `💳 *METODO:* ${metodoLabel[metodoFinal] || metodoFinal}\n`;
+    msg += `📍 *STATUS:* Aguardando Confirmação\n\n`;
+    msg += `Olá equipe Impacto! Acabei de fechar meu pedido no site. Segue o resumo para darmos continuidade ao pagamento e envio. 🚀`;
 
     window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`, '_blank');
   };
@@ -120,6 +133,7 @@ export default function CheckoutPage() {
     setLoadingCheckout(true);
 
     try {
+      // Para o método direta no Whatsapp sem gerar ordem no banco (opcional, mas vamos gerar para todas agora)
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -132,8 +146,16 @@ export default function CheckoutPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Falha no processamento.");
       
+      // Abre o WhatsApp com os detalhes
+      enviarPedidoWhatsApp(data.orderId, pagamento);
+      
       limparCarrinho();
-      router.push(`/checkout/sucesso?order=${data.orderId}&method=${pagamento}`);
+      
+      // Redireciona para sucesso após abrir o zap
+      setTimeout(() => {
+        router.push(`/checkout/sucesso?order=${data.orderId}&method=${pagamento}`);
+      }, 500);
+
     } catch (err: any) {
       showToast(err.message || 'Erro ao processar checkout. Tente novamente.', 'error');
       setLoadingCheckout(false);
@@ -393,40 +415,32 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {pagamento === 'WHATSAPP' ? (
-                  // Botão WhatsApp
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={enviarPedidoWhatsApp}
-                    onMouseEnter={() => setIsHoveringBtn(true)}
-                    onMouseLeave={() => setIsHoveringBtn(false)}
-                    className="w-full relative overflow-hidden group bg-[#25D366] hover:bg-[#22c55e] text-white rounded-2xl py-5 font-black flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_rgba(37,211,102,0.3)] hover:shadow-[0_0_40px_rgba(37,211,102,0.5)] z-10"
-                  >
-                    <motion.div animate={isHoveringBtn ? { rotate: [0,-10,10,-10,0] } : {}} transition={{ duration: 0.4 }}>
-                      <MessageCircle className="w-6 h-6" />
-                    </motion.div>
-                    <span className="tracking-wide uppercase text-sm">ENVIAR PEDIDO PELO WHATSAPP</span>
-                    <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"></div>
-                  </motion.button>
-                ) : (
-                  // Botão PIX/Cartão
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={processarCheckoutNativo}
-                    disabled={!session || loadingCheckout}
-                    className="w-full relative overflow-hidden group disabled:opacity-50 bg-gradient-to-r from-impacto-yellow to-impacto-orange hover:from-impacto-orange hover:to-impacto-red disabled:bg-zinc-800 disabled:text-zinc-500 text-zinc-950 rounded-2xl py-6 font-black flex items-center justify-center gap-3 transition-all shadow-[0_0_30px_rgba(255,102,0,0.4)] border-b-4 border-impacto-red active:border-b-0 active:translate-y-1 z-10"
-                  >
-                    <div className="flex items-center gap-2">
-                      {loadingCheckout ? <Zap className="w-6 h-6 animate-pulse" /> : <ShieldCheck className="w-6 h-6" />}
-                      <span className="tracking-widest uppercase text-sm">
-                        {loadingCheckout ? 'ACELERANDO...' : (session ? `FECHAR PEDIDO NO ${pagamento === 'PIX' ? 'PIX' : 'CARTÃO'}` : 'ACESSE SUA CONTA')}
-                      </span>
-                    </div>
-                    {session && !loadingCheckout && <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12"></div>}
-                  </motion.button>
-                )}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={processarCheckoutNativo}
+                  disabled={!session || loadingCheckout}
+                  onMouseEnter={() => setIsHoveringBtn(true)}
+                  onMouseLeave={() => setIsHoveringBtn(false)}
+                  className={`w-full relative overflow-hidden group disabled:opacity-50 rounded-2xl py-6 font-black flex items-center justify-center gap-3 transition-all z-10 
+                    ${pagamento === 'WHATSAPP' ? 'bg-[#25D366] hover:bg-[#22c55e] text-white shadow-[0_0_20px_rgba(37,211,102,0.3)]' : 
+                      pagamento === 'PIX' ? 'bg-zinc-100 text-zinc-950 shadow-[0_0_30px_rgba(255,255,255,0.2)]' :
+                      'bg-gradient-to-r from-impacto-yellow to-impacto-orange text-zinc-950 shadow-[0_0_30px_rgba(255,102,0,0.4)] border-b-4 border-impacto-red active:border-b-0 active:translate-y-1'
+                    }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {loadingCheckout ? <Zap className="w-6 h-6 animate-pulse" /> : 
+                      pagamento === 'WHATSAPP' ? <MessageCircle className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />
+                    }
+                    <span className="tracking-widest uppercase text-sm">
+                      {loadingCheckout ? 'ACELERANDO...' : 
+                        !session ? 'ACESSE SUA CONTA' : 
+                        `FINALIZAR NO ${pagamento.replace('_', ' ')}`
+                      }
+                    </span>
+                  </div>
+                  {session && !loadingCheckout && <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"></div>}
+                </motion.button>
                 
                 <p className="text-[10px] text-zinc-600 text-center mt-5 leading-relaxed relative z-10 max-w-[280px] font-black uppercase tracking-tighter mx-auto">
                   SISTEMA IMPACTO DE SEGURANÇA TOTAL DO PILOTO.

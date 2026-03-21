@@ -1,36 +1,44 @@
 @import "tailwindcss";
 
+:root {
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --impacto-red: #dc2626;
+  --impacto-orange: #f97316;
+  --impacto-yellow: #facc15;
+  --accent-yellow: #fef08a;
+}
+
 @theme {
-  --color-impacto-red: #ff0000;
-  --color-impacto-orange: #ff4d00;
-  --color-impacto-yellow: #ffcc00;
+  --color-impacto-red: var(--impacto-red);
+  --color-impacto-orange: var(--impacto-orange);
+  --color-impacto-yellow: var(--impacto-yellow);
+  --color-accent-yellow: var(--accent-yellow);
   --color-zinc-950: #050505;
+}
+
+@layer base {
+  html, body {
+    background-color: var(--background);
+    color: var(--foreground);
+    overflow-x: hidden;
+    overscroll-behavior-y: none; /* Previne o bounce no mobile */
+    -webkit-tap-highlight-color: transparent; /* Remove o highlight cinza ao tocar no iOS */
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  body {
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 }
 
 /* Classe de gradiente ultra-robusta para garantir visibilidade */
 .text-racing-gradient {
-  background: linear-gradient(90deg, #ffcc00 0%, #ff4d00 50%, #ff0000 100%);
+  background: linear-gradient(90deg, var(--impacto-yellow) 0%, var(--impacto-orange) 50%, var(--impacto-red) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent !important;
   display: inline-block;
-}
-
-:root {
-  --background: #000000;
-  --foreground: #ffffff;
-
-  /* Cores do Tema - Tailwind v4 detecta automaticamente o prefixo --color- */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-}
-
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
 }
 
 @keyframes shimmer {

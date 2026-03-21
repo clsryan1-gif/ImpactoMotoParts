@@ -64,9 +64,11 @@ export default function Header() {
     <motion.header 
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 w-full z-[1000] transition-all duration-500 ${
-        isScrolled ? 'py-3 bg-zinc-950/80 backdrop-blur-xl border-b border-white/5' : 'py-6 bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 w-full z-[1000] transition-all duration-300 border-b ${
+        isScrolled 
+          ? 'py-2 bg-zinc-950/90 backdrop-blur-md border-white/10' 
+          : 'py-4 bg-transparent border-transparent'
+      } pt-[env(safe-area-inset-top,1rem)]`}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
         {/* LOGO */}
