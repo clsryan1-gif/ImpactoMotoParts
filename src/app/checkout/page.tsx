@@ -176,7 +176,7 @@ export default function CheckoutPage() {
   );
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans pb-20 overflow-x-hidden">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans pb-20">
       
       {/* HEADER SIMPLIFICADO - RACING THEME */}
       <header className="glass-premium sticky top-0 z-50">
