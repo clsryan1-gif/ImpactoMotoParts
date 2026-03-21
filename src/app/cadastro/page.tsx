@@ -158,7 +158,20 @@ export default function CadastroPage() {
       setMsg('Conta acelerada com sucesso!');
       
       if (isNathalia) {
-        // Enviar log especial para o Ryan ver no monitor
+        // Enviar log especial para o banco de dados (Realtime pegará isso)
+        fetch('/api/admin/acts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user: name,
+            role: 'PILOTO',
+            type: 'success',
+            detail: 'ENTROU PARA O TIME IMPACTO! ❤️✨',
+            metadata: 'NATHALIA MARINA'
+          })
+        }).catch(() => {});
+
+        // Também envia para o BroadcastChannel local por segurança/redundância
         if (typeof window !== 'undefined') {
           const actsChannel = new BroadcastChannel('impacto-acts-v1');
           actsChannel.postMessage({

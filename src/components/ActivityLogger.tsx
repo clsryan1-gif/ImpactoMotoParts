@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Terminal, X, ChevronUp, ChevronDown, Trash2, Zap, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from 'next-auth/react';
+import { supabase } from '@/lib/supabase';
 
 export type ActivityLog = {
   id: string;
@@ -17,7 +18,7 @@ export type ActivityLog = {
 };
 
 // Instância global do canal para sincronização entre abas
-const actsChannel = typeof window !== 'undefined' ? new BroadcastChannel('impacto-acts-v1') : null;
+// Removido BroadcastChannel local para usar Realtime Global
 
 export default function ActivityLogger() {
   const { data: session } = useSession();
@@ -51,8 +52,7 @@ export default function ActivityLogger() {
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour12: false }),
     };
     
-    // Envia o log para outras abas (incluindo a página dedicada)
-    actsChannel?.postMessage(newLog);
+    // Removemos postMessage local para simplificar, pois agora ouvimos o DB diretamente
     
     // Persiste no Banco de Dados (sem travar a UI)
     if (isAdmin) {
@@ -72,16 +72,33 @@ export default function ActivityLogger() {
     setLogs(prev => [...prev.slice(-99), newLog]); // Aumentado para 100 logs
   };
 
-  // Escuta logs de outras abas
+  // Escuta logs do banco de dados em tempo real (Global)
   useEffect(() => {
-    if (!isAdmin || !actsChannel) return;
+    if (!isAdmin) return;
 
-    const handleMessage = (event: MessageEvent<ActivityLog>) => {
-      setLogs(prev => [...prev.slice(-99), event.data]);
+    const channel = supabase
+      .channel('global-activity')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'ActivityLog',
+        },
+        (payload) => {
+          const newLog = payload.new as any;
+          const formattedLog = {
+            ...newLog,
+            timestamp: new Date(newLog.createdAt).toLocaleTimeString('pt-BR', { hour12: false })
+          };
+          setLogs(prev => [...prev.slice(-99), formattedLog]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
     };
-
-    actsChannel.addEventListener('message', handleMessage);
-    return () => actsChannel.removeEventListener('message', handleMessage);
   }, [isAdmin]);
 
   // Captura cliques globais inteligentes

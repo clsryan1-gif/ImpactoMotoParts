@@ -6,12 +6,16 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
+    const body = await req.json();
+    const { user, role, type, detail, metadata } = body;
+
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any)?.role !== 'ADMIN') {
+    const isAdmin = session && (session.user as any)?.role === 'ADMIN';
+
+    // Se não for admin, só permite logar tipos específicos e seguros (como sucesso de cadastro)
+    if (!isAdmin && type !== 'success') {
       return new NextResponse('Unauthorized', { status: 401 });
     }
-
-    const { user, role, type, detail, metadata } = await req.json();
 
     const log = await prisma.activityLog.create({
       data: {

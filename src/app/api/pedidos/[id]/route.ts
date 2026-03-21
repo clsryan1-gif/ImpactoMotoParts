@@ -16,6 +16,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const order = await prisma.order.findUnique({
       where: { id: id },
       include: {
+        user: { select: { name: true, phone: true } },
         items: {
           include: {
             product: true

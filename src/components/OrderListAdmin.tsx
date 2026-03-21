@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Calendar, AlertCircle, Printer } from "lucide-react";
 import OrderStatusChanger from "./OrderStatusChanger";
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/lib/supabase';
 import { useToast } from '@/context/ToastContext';
 import { useRouter } from 'next/navigation';
 
@@ -13,9 +14,59 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
   const [pedidos, setPedidos] = useState(initialOrders);
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<'TODOS' | 'PENDENTE' | 'PAGO' | 'ENVIADO'>('TODOS');
+  const { showToast } = useToast();
+
   useEffect(() => {
     setPedidos(initialOrders);
   }, [initialOrders]);
+
+  // Realtime Logic
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-orders')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'Order',
+        },
+        async (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const newOrderRaw = payload.new as any;
+            
+            // Busca os detalhes completos (itens e usuário) via API
+            try {
+              const res = await fetch(`/api/pedidos/${newOrderRaw.id}`);
+              if (res.ok) {
+                const fullOrder = await res.json();
+                setPedidos(prev => [fullOrder, ...prev]);
+                showToast('NOVO PEDIDO RECEBIDO! 🏁', 'success');
+                
+                // Toca som de alerta se possível (feedback sonoro para o Ryan)
+                if (typeof Audio !== 'undefined') {
+                  const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                  audio.play().catch(() => {});
+                }
+              }
+            } catch (err) {
+              console.error('Erro ao buscar detalhes do novo pedido:', err);
+            }
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedOrder = payload.new as any;
+            setPedidos(prev => prev.map(p => p.id === updatedOrder.id ? { ...p, status: updatedOrder.status } : p));
+          } else if (payload.eventType === 'DELETE') {
+            const deletedId = (payload.old as any).id;
+            setPedidos(prev => prev.filter(p => p.id !== deletedId));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [showToast]);
 
   const BRL = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 

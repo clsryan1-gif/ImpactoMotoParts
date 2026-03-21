@@ -7,7 +7,7 @@ import { Terminal, Zap, Trash2, LayoutDashboard, Database, Activity, UserCircle 
 import { motion, AnimatePresence } from 'framer-motion';
 import { ActivityLog } from '@/components/ActivityLogger';
 
-const actsChannel = typeof window !== 'undefined' ? new BroadcastChannel('impacto-acts-v1') : null;
+import { supabase } from '@/lib/supabase';
 
 export default function ActsMonitorPage() {
   const { data: session, status } = useSession();
@@ -44,14 +44,31 @@ export default function ActsMonitorPage() {
   }, [status]);
 
   useEffect(() => {
-    if (!actsChannel) return;
+    // Escuta mudanças em tempo real no Banco de Dados
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'ActivityLog',
+        },
+        (payload) => {
+          const newLog = payload.new as any;
+          // Formata o timestamp para o console
+          const formattedLog = {
+            ...newLog,
+            timestamp: new Date(newLog.createdAt).toLocaleTimeString('pt-BR', { hour12: false })
+          };
+          setLogs(prev => [...prev.slice(-499), formattedLog]);
+        }
+      )
+      .subscribe();
 
-    const handleMessage = (event: MessageEvent<ActivityLog>) => {
-      setLogs(prev => [...prev.slice(-499), event.data]); // Monitor retém até 500 logs
+    return () => {
+      supabase.removeChannel(channel);
     };
-
-    actsChannel.addEventListener('message', handleMessage);
-    return () => actsChannel.removeEventListener('message', handleMessage);
   }, []);
 
   useEffect(() => {

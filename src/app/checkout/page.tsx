@@ -63,24 +63,30 @@ export default function CheckoutPage() {
       'WHATSAPP': '🟢 Combinar via WhatsApp'
     };
 
-    let msg = `🏁 *IMPACTO MOTO PARTS — RESUMO DO PEDIDO*\n`;
-    msg += `🆔 *PEDIDO:* #${orderId || 'PENDENTE'}\n`;
+    let msg = `⚡ *IMPACTO MOTO PARTS - ELITE EM PERFORMANCE* ⚡\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `📦 *RESUMO DO SEU PEDIDO*\n\n`;
+    msg += `🆔 *PEDIDO:* #${orderId ? orderId.substring(0, 8).toUpperCase() : 'PENDENTE'}\n`;
     msg += `🗓️ *DATA:* ${data} às ${horaAtual}\n`;
-    msg += `👤 *CLIENTE:* ${clienteNome}\n`;
+    msg += `👤 *PILOTO:* ${clienteNome}\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     
     groupedCart.forEach((p, i) => {
-      msg += `📦 *ITEM ${i + 1}* (x${p.quantity})\n`;
+      msg += `🔹 *ITEM ${i + 1}* (x${p.quantity})\n`;
       msg += `   *Peça:* ${p.nome}\n`;
       msg += `   *Ref:* ${p.categoria}\n`;
       msg += `   *Subtotal:* ${BRL(p.preco * p.quantity)}\n\n`;
     });
 
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += `💰 *TOTAL A PAGAR: ${BRL(total)}*\n`;
-    msg += `💳 *METODO:* ${metodoLabel[metodoFinal] || metodoFinal}\n`;
-    msg += `📍 *STATUS:* Aguardando Confirmação\n\n`;
-    msg += `Olá equipe Impacto! Acabei de fechar meu pedido no site. Segue o resumo para darmos continuidade ao pagamento e envio. 🚀`;
+    msg += `💰 *TOTAL FINAL: ${BRL(total)}*\n`;
+    msg += `💳 *PAGAMENTO:* ${metodoLabel[metodoFinal] || metodoFinal}\n`;
+    msg += `✅ *STATUS:* Pedido Registrado no Sistema\n\n`;
+    msg += `-----------------------------------------\n`;
+    msg += `🛡️ *COMPRA 100% SEGURA*\n`;
+    msg += `Impacto Moto Parts: Sua loja de confiança para peças de alta performance! 🛠️🏁\n`;
+    msg += `-----------------------------------------\n\n`;
+    msg += `Olá equipe Impacto! Acabei de fechar meu pedido no site. Segue o resumo para darmos continuidade ao envio. 🚀`;
 
     window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`, '_blank');
   };
