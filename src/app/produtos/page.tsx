@@ -110,6 +110,8 @@ export default function ProdutosPage() {
     setCarrinho(prev => {
       const novo = [...prev, p];
       localStorage.setItem('@impacto-carrinho', JSON.stringify(novo));
+      // Avisar outros componentes (Header, FloatingCart)
+      window.dispatchEvent(new Event('cart-updated'));
       return novo;
     });
     
@@ -240,44 +242,6 @@ export default function ProdutosPage() {
           )}
         </AnimatePresence>
       </main>
-
-      {/* CARRINHO FLUTUANTE (FAB) */}
-      <AnimatePresence>
-        {carrinho.length > 0 && (
-          <Link href="/checkout">
-            <motion.div 
-              initial={{ scale: 0, y: 100, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0, y: 100, opacity: 0 }}
-              whileHover={{ scale: 1.1, rotate: -3 }}
-              whileTap={{ scale: 0.9 }}
-              className="fixed bottom-8 right-8 z-[60] flex items-center justify-center"
-            >
-              {/* Glow Pulsante de fundo */}
-              <div className="absolute inset-0 bg-red-600 rounded-full blur-3xl opacity-50 animate-pulse"></div>
-              
-              <button className="relative bg-red-600 hover:bg-red-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(220,38,38,0.5)] border-2 border-white/20 transition-colors group">
-                <ShoppingCart className="w-7 h-7" />
-                
-                {/* Contador de Itens Flutuante */}
-                <motion.span 
-                  key={carrinho.length}
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="absolute -top-1 -right-1 bg-white text-red-600 text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center shadow-md border-2 border-red-600"
-                >
-                  {carrinho.length}
-                </motion.span>
-
-                {/* Texto explicativo lateral que surge no hover */}
-                <span className="absolute right-full mr-4 bg-zinc-900 border border-zinc-800 text-white text-[10px] font-black px-4 py-2 rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none tracking-widest uppercase">
-                  Finalizar Pedido
-                </span>
-              </button>
-            </motion.div>
-          </Link>
-        )}
-      </AnimatePresence>
 
     </div>
   );

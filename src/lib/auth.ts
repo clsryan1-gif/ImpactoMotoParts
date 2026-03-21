@@ -17,8 +17,19 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Telefone e senha são obrigatórios.");
         }
 
-        const user = await prisma.user.findUnique({
-          where: { phone: credentials.phone },
+        const cleanPhone = credentials.phone.replace(/\D/g, '');
+        // Tentativa de buscar com e sem o prefixo 55
+        const phoneVariants = [cleanPhone];
+        if (cleanPhone.startsWith('55')) {
+          phoneVariants.push(cleanPhone.substring(2));
+        } else {
+          phoneVariants.push('55' + cleanPhone);
+        }
+
+        const user = await prisma.user.findFirst({
+          where: { 
+            phone: { in: phoneVariants }
+          },
         });
 
         if (!user) {

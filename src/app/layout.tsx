@@ -6,6 +6,7 @@ import Providers from "@/components/Providers";
 import RegisterSW from "@/components/RegisterSW";
 import ActivityLogger from "@/components/ActivityLogger";
 import PWAInstall from "@/components/PWAInstall";
+import FloatingCart from "@/components/FloatingCart";
 import Header from "@/components/Header";
 
 const bebasNeue = Bebas_Neue({
@@ -78,6 +79,7 @@ export default function RootLayout({
           <PWAInstall />
           <ActivityLogger />
           <Header />
+          <FloatingCart />
           <PageTransition>{children}</PageTransition>
         </Providers>
       </body>

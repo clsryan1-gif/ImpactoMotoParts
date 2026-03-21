@@ -52,6 +52,9 @@ export default function ProdutoDetalhePage() {
     carrinho.push(produto);
     localStorage.setItem('@impacto-carrinho', JSON.stringify(carrinho));
     
+    // Avisar outros componentes
+    window.dispatchEvent(new Event('cart-updated'));
+
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
