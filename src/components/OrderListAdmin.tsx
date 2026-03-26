@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Calendar, AlertCircle, Printer, Trash2, MapPin } from "lucide-react";
+import { ShoppingCart, Calendar, AlertCircle, Printer, Trash2, MapPin, FileText } from "lucide-react";
 import OrderStatusChanger from "./OrderStatusChanger";
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
@@ -9,7 +9,6 @@ import { useToast } from '@/context/ToastContext';
 import { useRouter } from 'next/navigation';
 import { hideOrder } from '@/app/admin/pedidos/actions';
 import ConfirmModal from './ConfirmModal';
-import PrintOptionsModal from './PrintOptionsModal';
 
 const BRL = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -18,7 +17,7 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<'TODOS' | 'PENDENTE' | 'PAGO' | 'ENVIADO'>('TODOS');
   const [modalDelete, setModalDelete] = useState<{ isOpen: boolean, orderId: string | null }>({ isOpen: false, orderId: null });
-  const [modalPrint, setModalPrint] = useState<{ isOpen: boolean, order: any | null }>({ isOpen: false, order: null });
+  const [activePrintOrderId, setActivePrintOrderId] = useState<string | null>(null);
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -75,7 +74,7 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
 
   const BRL = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-  const handlePrint = (pedido: any, type: 'thermal' | 'a4' | 'label' = 'thermal') => {
+  const handlePrint = (pedido: any, type: 'thermal' | 'a4' | 'pdv' = 'thermal') => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
@@ -250,22 +249,55 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
         </div>
       `;
     } else {
-      // Label condensed
+      // PDV simplificado
       content = `
         <style>
-          body { font-family: 'Inter', sans-serif; padding: 20px; color: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-          .label-box { border: 4px solid #000; padding: 30px; width: 400px; }
-          .title { font-size: 12px; font-weight: 900; background: #000; color: #fff; padding: 4px 10px; display: inline-block; margin-bottom: 20px; }
-          .dest { font-size: 24px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
-          .addr { font-size: 16px; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 10px; }
-          @media print { .no-print { display: none; } }
+          @page { margin: 0; }
+          body { 
+            font-family: 'Courier New', Courier, monospace; 
+            width: 80mm; 
+            padding: 5mm; 
+            margin: 0; 
+            color: #000;
+            font-size: 11px;
+          }
+          .center { text-align: center; }
+          .bold { font-weight: bold; }
+          .hr { border-bottom: 1px dashed #000; margin: 10px 0; }
+          table { width: 100%; border-collapse: collapse; }
+          td { padding: 3px 0; }
+          .footer { margin-top: 15px; font-size: 9px; opacity: 0.7; }
         </style>
-        <div class="label-box">
-          <div class="title">DESTINATÁRIO / PILOTO</div>
-          <div class="dest">${pedido.user?.name || 'Consumidor'}</div>
-          <div class="addr">${enderecoData.rua}, ${enderecoData.numero}</div>
-          <div class="addr bold" style="border:none">${enderecoData.bairro}</div>
-          <div class="title" style="margin-top:20px">REMETENTE: IMPACTO MOTO PARTS</div>
+        <div class="center">
+          <div class="bold" style="font-size:16px">IMPACTO MOTO PARTS</div>
+          <div class="hr"></div>
+          <div class="bold">COMPROVANTE DE VENDA</div>
+          <div>#${pedido.id.substring(0, 8).toUpperCase()}</div>
+        </div>
+
+        <div style="margin: 10px 0;">
+          <div>DATA: ${dataFormatada} às ${horaFormatada}</div>
+          <div>CLIENTE: ${pedido.user?.name || 'CONSUMIDOR'}</div>
+        </div>
+
+        <div class="hr"></div>
+        <table>
+          ${pedido.items.map((i: any) => `
+            <tr>
+              <td>${i.quantity}x ${i.product.nome}</td>
+              <td style="text-align:right">${BRL(i.price * i.quantity)}</td>
+            </tr>
+          `).join('')}
+        </table>
+        <div class="hr"></div>
+
+        <div style="text-align:right" class="bold">
+          TOTAL: <span style="font-size:16px">${BRL(pedido.total)}</span>
+        </div>
+
+        <div class="center footer">
+          - USO INTERNO / BALCÃO -
+          <br/>SISTEMA IMPACTO PDV
         </div>
       `;
     }
@@ -428,18 +460,68 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
                 <strong className="text-lg font-black text-green-400 font-mono drop-shadow-[0_0_10px_rgba(74,222,128,0.2)]">{BRL(pedido.total)}</strong>
               </div>
               <div className="flex items-center gap-3">
-                <div className="flex flex-col items-end gap-1">
+                <div className="flex flex-col items-end gap-1 relative">
                   <OrderStatusChanger orderId={pedido.id} currentStatus={pedido.status} />
                   <span className="text-[8px] text-zinc-600 uppercase tracking-widest font-black">Via {pedido.paymentType.replace('_', ' ')}</span>
                 </div>
                 
+                <div className="relative">
                   <button 
-                    onClick={() => setModalPrint({ isOpen: true, order: pedido })}
-                    className="p-3 rounded-xl bg-zinc-800/50 hover:bg-blue-500/20 text-zinc-600 hover:text-blue-500 transition-all border border-transparent hover:border-blue-500/20"
+                    onClick={() => setActivePrintOrderId(activePrintOrderId === pedido.id ? null : pedido.id)}
+                    className={`p-3 rounded-xl transition-all border ${activePrintOrderId === pedido.id ? 'bg-blue-500 text-white border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-zinc-800/50 hover:bg-blue-500/20 text-zinc-600 hover:text-blue-500 border-transparent hover:border-blue-500/20'}`}
                     title="Opções de Impressão"
                   >
                     <Printer className="w-4 h-4" />
                   </button>
+
+                  {/* Menu de Impressão Inline */}
+                  <AnimatePresence>
+                    {activePrintOrderId === pedido.id && (
+                      <>
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                          className="absolute bottom-full right-0 mb-3 bg-zinc-950 border border-zinc-800 p-2 rounded-2xl shadow-2xl z-50 flex flex-col gap-1 min-w-[180px]"
+                        >
+                          <div className="text-[9px] font-black text-zinc-600 uppercase tracking-widest px-3 py-1 border-b border-zinc-900 mb-1">Modelos Disponíveis</div>
+                          <button 
+                            onClick={() => { handlePrint(pedido, 'a4'); setActivePrintOrderId(null); }}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-400 hover:text-blue-400 transition-colors text-left"
+                          >
+                            <FileText className="w-4 h-4" />
+                            <div className="flex flex-col">
+                              <span className="text-[10px] font-black uppercase tracking-tight">Papel A4 (Padrão)</span>
+                              <span className="text-[8px] font-bold text-zinc-600">Relatório Completo</span>
+                            </div>
+                          </button>
+                          <button 
+                            onClick={() => { handlePrint(pedido, 'thermal'); setActivePrintOrderId(null); }}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-400 hover:text-yellow-500 transition-colors text-left"
+                          >
+                            <Printer className="w-4 h-4" />
+                            <div className="flex flex-col">
+                              <span className="text-[10px] font-black uppercase tracking-tight">Térmica (80mm)</span>
+                              <span className="text-[8px] font-bold text-zinc-600">Cupom do Motoboy</span>
+                            </div>
+                          </button>
+                          <button 
+                            onClick={() => { handlePrint(pedido, 'pdv'); setActivePrintOrderId(null); }}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-400 hover:text-green-400 transition-colors text-left border-t border-zinc-900 mt-1 pt-2"
+                          >
+                            <ShoppingCart className="w-4 h-4" />
+                            <div className="flex flex-col">
+                              <span className="text-[10px] font-black uppercase tracking-tight">PDV (Balcão)</span>
+                              <span className="text-[8px] font-bold text-zinc-600">Simplificado Rápido</span>
+                            </div>
+                          </button>
+                        </motion.div>
+                        {/* Overlay invisível para fechar ao clicar fora */}
+                        <div className="fixed inset-0 z-40" onClick={() => setActivePrintOrderId(null)}></div>
+                      </>
+                    )}
+                  </AnimatePresence>
+                </div>
 
                   <button 
                     onClick={() => handleDelete(pedido.id)}
@@ -464,13 +546,6 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
         message="Deseja realmente apagar este pedido do painel? Ele continuará salvo no banco de dados para seu histórico e segurança."
         confirmLabel="Pode Apagar"
         cancelLabel="Mantenha aqui"
-      />
-
-      <PrintOptionsModal 
-        isOpen={modalPrint.isOpen}
-        orderId={modalPrint.order?.id || ''}
-        onClose={() => setModalPrint({ isOpen: false, order: null })}
-        onPrint={(type) => handlePrint(modalPrint.order, type)}
       />
     </div>
   );
