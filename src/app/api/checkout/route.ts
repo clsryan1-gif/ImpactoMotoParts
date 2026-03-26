@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Faça login para finalizar a compra." }, { status: 401 });
     }
 
-    const { itens, paymentType } = await req.json();
+    const { itens, paymentType, endereco, taxaEntrega } = await req.json();
 
     if (!itens || !itens.length || !paymentType) {
       return NextResponse.json({ message: "Carrinho vazio ou pagamento não selecionado." }, { status: 400 });
@@ -67,9 +67,11 @@ export async function POST(req: NextRequest) {
       const newOrder = await tx.order.create({
         data: {
           userId: (session.user as any).id,
-          total: total,
+          total: total + (taxaEntrega || 0),
           status: "PENDENTE",
           paymentType: paymentType,
+          endereco: typeof endereco === 'object' ? JSON.stringify(endereco) : endereco,
+          taxaEntrega: taxaEntrega || 0,
           items: {
             create: orderItemsData
           }

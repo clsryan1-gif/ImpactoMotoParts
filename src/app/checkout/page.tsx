@@ -180,7 +180,9 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           itens: carrinho,
-          paymentType: pagamento
+          paymentType: pagamento,
+          endereco: endereco,
+          taxaEntrega: endereco?.taxa || 0
         })
       });
 

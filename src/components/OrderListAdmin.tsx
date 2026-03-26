@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Calendar, AlertCircle, Printer, Trash2 } from "lucide-react";
+import { ShoppingCart, Calendar, AlertCircle, Printer, Trash2, MapPin } from "lucide-react";
 import OrderStatusChanger from "./OrderStatusChanger";
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
@@ -77,61 +77,109 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
+    let enderecoData = { rua: '', numero: '', complemento: '', bairro: '', taxa: 0 };
+    if (pedido.endereco) {
+      try {
+        enderecoData = typeof pedido.endereco === 'string' ? JSON.parse(pedido.endereco) : pedido.endereco;
+      } catch (e) {
+        // Fallback se não for JSON
+        console.error("Erro ao parsear endereço:", e);
+      }
+    }
+
+    const dataFormatada = new Date(pedido.createdAt).toLocaleDateString('pt-BR');
+    const horaFormatada = new Date(pedido.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
     printWindow.document.write(`
       <html>
         <head>
-          <title>Etiqueta de Envio - Pedido #${pedido.id.substring(0, 8)}</title>
+          <title>Nota de Entrega #${pedido.id.substring(0, 8)}</title>
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-            body { font-family: 'Inter', sans-serif; padding: 40px; color: #000; }
-            .header { border-bottom: 4px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
-            .logo { font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; }
-            .order-id { font-size: 14px; font-weight: bold; background: #000; color: #fff; padding: 5px 12px; border-radius: 4px; }
-            .section { margin-bottom: 30px; }
-            .section-title { font-size: 12px; font-weight: 900; text-transform: uppercase; color: #666; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-            .client-name { font-size: 20px; font-weight: 900; text-transform: uppercase; }
-            .client-phone { font-size: 14px; color: #444; }
-            .items-table { width: 100%; border-collapse: collapse; }
-            .items-table th { text-align: left; font-size: 10px; text-transform: uppercase; padding: 10px; border-bottom: 2px solid #000; }
-            .items-table td { padding: 12px 10px; border-bottom: 1px solid #eee; font-size: 13px; }
-            .total-row { font-size: 18px; font-weight: 900; text-align: right; margin-top: 20px; }
+            @page { margin: 0; }
+            body { 
+              font-family: 'Courier New', Courier, monospace; 
+              width: 80mm; 
+              padding: 5mm; 
+              margin: 0; 
+              color: #000;
+              font-size: 12px;
+              line-height: 1.2;
+            }
+            .center { text-align: center; }
+            .bold { font-weight: bold; }
+            .border-top { border-top: 1px dashed #000; margin-top: 5px; padding-top: 5px; }
+            .border-bottom { border-bottom: 1px dashed #000; margin-bottom: 5px; padding-bottom: 5px; }
+            .large { font-size: 16px; }
+            .xlarge { font-size: 20px; }
+            table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+            th { text-align: left; border-bottom: 1px solid #000; padding: 2px; font-size: 10px; }
+            td { padding: 4px 2px; vertical-align: top; }
+            .total-box { margin-top: 10px; text-align: right; }
+            .footer { margin-top: 20px; font-size: 10px; }
             @media print { .no-print { display: none; } }
           </style>
         </head>
         <body>
-          <div class="header">
-            <div class="logo">IMPACTO MOTO PARTS</div>
-            <div class="order-id">PEDIDO #${pedido.id.substring(0, 8)}</div>
+          <div class="center">
+            <div class="bold xlarge">IMPACTO MOTO PARTS</div>
+            <div>ELITE EM PERFORMANCE</div>
+            <div class="border-top border-bottom">NOTA DE ENTREGA</div>
           </div>
-          <div class="section">
-            <div class="section-title">Destinatário / Piloto</div>
-            <div class="client-name">${pedido.user?.name || 'Cliente'}</div>
-            <div class="client-phone">WhatsApp: ${pedido.user?.phone}</div>
+
+          <div style="margin: 10px 0;">
+            <div><span class="bold">PEDIDO:</span> #${pedido.id.substring(0, 8).toUpperCase()}</div>
+            <div><span class="bold">DATA:</span> ${dataFormatada} às ${horaFormatada}</div>
+            <div><span class="bold">CLIENTE:</span> ${pedido.user?.name || 'CONSUMIDOR'}</div>
+            <div><span class="bold">TEL:</span> ${pedido.user?.phone || 'N/A'}</div>
           </div>
-          <div class="section">
-            <div class="section-title">Conteúdo da Encomenda</div>
-            <table class="items-table">
+
+          <div class="border-top">
+            <div class="center bold">DESTINO</div>
+            <div><span class="bold">RUA:</span> ${enderecoData.rua}, ${enderecoData.numero}</div>
+            ${enderecoData.complemento ? `<div><span class="bold">COMPL:</span> ${enderecoData.complemento}</div>` : ''}
+            <div><span class="bold">BAIRRO:</span> ${enderecoData.bairro}</div>
+          </div>
+
+          <div class="border-top">
+            <div class="center bold">ITENS DO PEDIDO</div>
+            <table>
               <thead>
                 <tr>
-                  <th>Produto</th>
-                  <th>Quant.</th>
-                  <th>Preço Unit.</th>
+                  <th>DESC</th>
+                  <th style="text-align:center">QTD</th>
+                  <th style="text-align:right">V.UNIT</th>
                 </tr>
               </thead>
               <tbody>
                 ${pedido.items.map((i: any) => `
                   <tr>
                     <td>${i.product.nome}</td>
-                    <td>${i.quantity}</td>
-                    <td>${BRL(i.price)}</td>
+                    <td style="text-align:center">${i.quantity}</td>
+                    <td style="text-align:right">${BRL(i.price)}</td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
           </div>
-          <div class="total-row">TOTAL: ${BRL(pedido.total)}</div>
-          <div class="no-print" style="margin-top: 50px; text-align: center;">
-            <button onclick="window.print()" style="padding: 15px 30px; background: #000; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">EFETUAR IMPRESSÃO</button>
+
+          <div class="total-box border-top">
+            <div>SUBTOTAL: ${BRL(pedido.total - (pedido.taxaEntrega || 0))}</div>
+            <div>ENTREGA: ${pedido.taxaEntrega > 0 ? BRL(pedido.taxaEntrega) : 'GRÁTIS'}</div>
+            <div class="large bold">TOTAL: ${BRL(pedido.total)}</div>
+          </div>
+
+          <div class="border-top" style="margin-top: 15px;">
+            <div><span class="bold">PAGAMENTO:</span> ${pedido.paymentType.replace('_', ' ')}</div>
+            <div><span class="bold">STATUS:</span> ${pedido.status}</div>
+          </div>
+
+          <div class="center footer border-top">
+            <div>OBRIGADO PELA PREFERÊNCIA!</div>
+            <div class="bold italic">Impacto Moto Parts: Sua loja de confiança!</div>
+          </div>
+
+          <div class="no-print" style="margin-top: 30px; text-align: center;">
+             <button onclick="window.print()" style="padding: 20px; width: 100%; background: #000; color: #fff; border: 2px solid #333; font-weight: bold; cursor: pointer;">IMPRIMIR AGORA</button>
           </div>
         </body>
       </html>
@@ -244,6 +292,19 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
               <div>
                 <h3 className="font-black text-white text-sm uppercase tracking-wide">{pedido.user?.name || "Piloto"}</h3>
                 <p className="text-[10px] text-zinc-500 truncate font-medium">{pedido.user?.phone}</p>
+                {pedido.endereco && (
+                  <div className="mt-1 flex items-center gap-1 text-[9px] text-zinc-600 uppercase font-black">
+                    <MapPin className="w-2.5 h-2.5 text-impacto-yellow" />
+                    <span className="truncate">
+                      {(() => {
+                        try {
+                          const addr = typeof pedido.endereco === 'string' ? JSON.parse(pedido.endereco) : pedido.endereco;
+                          return `${addr.bairro}`;
+                        } catch(e) { return 'Endereço'; }
+                      })()}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
