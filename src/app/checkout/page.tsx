@@ -68,11 +68,11 @@ export default function CheckoutPage() {
       'WHATSAPP': '🟢 Combinar via WhatsApp'
     };
 
-    let msg = `🏁 *NOVO PEDIDO: IMPACTO MOTO PARTS* 🏁\n`;
-    msg += `🚀 *ELITE EM PERFORMANCE*\n`;
+    let msg = `🔥 *NOVO PEDIDO: IMPACTO MOTO PARTS* 🔥\n`;
+    msg += `🚀 *ALTA PERFORMANCE EM SUAS MÃOS* 🚀\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     
-    msg += `🆔 *PEDIDO:* #${orderId ? orderId.substring(0, 8).toUpperCase() : 'PENDENTE'}\n`;
+    msg += `🆔 *Nº DO PEDIDO:* #${orderId ? orderId.substring(0, 8).toUpperCase() : 'PENDENTE'}\n`;
     msg += `👤 *PILOTO:* ${clienteNome}\n`;
     msg += `📅 *DATA:* ${data} às ${horaAtual}\n\n`;
     
@@ -80,38 +80,40 @@ export default function CheckoutPage() {
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
     
     groupedCart.forEach((p, i) => {
-      msg += `${i + 1}️⃣ *${p.nome}*\n`;
-      msg += `   └─ ⚙️ *Cat:* ${p.categoria}\n`;
-      msg += `   └─ 💰 *Sub:* ${BRL(p.preco * p.quantity)} (x${p.quantity})\n\n`;
+      msg += `🔹 *${p.nome}*\n`;
+      msg += `   └─ ⚙️ Categoria: ${p.categoria}\n`;
+      msg += `   └─ 🔢 Quantidade: ${p.quantity}\n`;
+      msg += `   └─ 💰 Subtotal: ${BRL(p.preco * p.quantity)}\n\n`;
     });
-
-    const taxaEntrega = endereco?.taxa || 0;
-    const subtotal = total - taxaEntrega;
-
+ 
+    const taxaEntregaCalculada = endereco?.taxa || 0;
+    const subtotalCalculado = total - taxaEntregaCalculada;
+ 
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += `💵 *SUBTOTAL:* ${BRL(subtotal)}\n`;
-    msg += `🚚 *ENTREGA:* ${endereco?.tipo === 'RETIRADA' ? '🏁 RETIRADA NA LOJA' : (taxaEntrega > 0 ? BRL(taxaEntrega) : '✨ GRÁTIS')}\n`;
-    msg += `✨ *TOTAL FINAL:* *${BRL(total)}*\n`;
-    msg += `💳 *PAGAMENTO:* ${metodoLabel[metodoFinal] || metodoFinal}\n`;
+    msg += `💵 *SUBTOTAL:* ${BRL(subtotalCalculado)}\n`;
+    msg += `🚚 *FRETE:* ${endereco?.tipo === 'RETIRADA' ? '🏁 RETIRADA NA LOJA' : (taxaEntregaCalculada > 0 ? BRL(taxaEntregaCalculada) : '✨ GRÁTIS')}\n`;
+    msg += `🏆 *TOTAL FINAL:* *${BRL(total)}*\n`;
+    msg += `💳 *FORMA DE PAGAMENTO:* ${metodoLabel[metodoFinal] || metodoFinal}\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     
     if (endereco) {
       if (endereco.tipo === 'RETIRADA') {
-        msg += `📍 *OPÇÃO:* RETIRADA NA LOJA\n`;
-        msg += `🏢 *LOCAL:* Impacto Moto Parts - Santa Rita/PB\n\n`;
+        msg += `📍 *LOCAL DE RETIRADA:*\n`;
+        msg += `🏢 Impacto Moto Parts - Santa Rita/PB\n`;
+        msg += `✅ Disponível para retirada imediata.\n\n`;
       } else {
-        msg += `📍 *ENDEREÇO DE ENTREGA:*\n`;
-        msg += `   🏠 *Rua:* ${endereco.rua}, ${endereco.numero}\n`;
-        msg += `   🏙️ *Bairro:* ${endereco.bairro}\n`;
-        if (endereco.complemento) msg += `   📑 *Compl:* ${endereco.complemento}\n`;
+        msg += `📍 *DESTINO DA ENTREGA:*\n`;
+        msg += `🏠 *Rua:* ${endereco.rua}, ${endereco.numero}\n`;
+        msg += `🏙️ *Bairro:* ${endereco.bairro}\n`;
+        if (endereco.complemento) msg += `📑 *Compl:* ${endereco.complemento}\n`;
         msg += `\n`;
       }
     }
     
     msg += `🛡️ *DADOS REGISTRADOS COM SUCESSO!*\n`;
-    msg += `Impacto Moto Parts: Sua loja de confiança para peças de alta performance! 🛠️🏍️\n\n`;
+    msg += `Impacto Moto Parts: Sua loja de elite para peças de alta performance! 🛠️🏍️\n\n`;
     msg += `------------------------------------------\n`;
-    msg += `*Olá, acabei de fechar meu pedido pelo site! Aguardo o retorno para alinhar os últimos detalhes.* 🏁🔥`;
+    msg += `*Olá, acabei de fechar meu pedido pelo site! Aguardo o retorno para alinhar os últimos detalhes e acelerar a entrega.* 🏁🔥`;
 
     window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`, '_blank');
   };
