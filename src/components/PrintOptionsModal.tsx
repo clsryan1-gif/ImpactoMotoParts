@@ -32,10 +32,10 @@ export default function PrintOptionsModal({
       {isOpen && (
         <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 bg-black/80 backdrop-blur-[4px] overflow-y-auto">
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-8 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden mt-10 md:mt-20 mb-10"
+            exit={{ opacity: 0, y: 20 }}
+            className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-6 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative mt-[5vh] mb-[5vh] max-h-[85vh] overflow-y-auto custom-scrollbar"
           >
             {/* Background Accent */}
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-600/10 rounded-full blur-[80px]"></div>
