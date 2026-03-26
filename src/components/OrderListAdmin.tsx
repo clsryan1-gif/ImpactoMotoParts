@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Calendar, AlertCircle, Printer, Trash2, MapPin, FileText } from "lucide-react";
+import { ShoppingCart, Calendar, AlertCircle, Printer, Trash2, MapPin, FileText, Zap } from "lucide-react";
 import OrderStatusChanger from "./OrderStatusChanger";
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
@@ -17,7 +17,6 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<'TODOS' | 'PENDENTE' | 'PAGO' | 'ENVIADO'>('TODOS');
   const [modalDelete, setModalDelete] = useState<{ isOpen: boolean, orderId: string | null }>({ isOpen: false, orderId: null });
-  const [activePrintOrderId, setActivePrintOrderId] = useState<string | null>(null);
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -465,71 +464,40 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
                   <span className="text-[8px] text-zinc-600 uppercase tracking-widest font-black">Via {pedido.paymentType.replace('_', ' ')}</span>
                 </div>
                 
-                <div className="relative">
+                {/* Ações de Impressão Diretas */}
+                <div className="flex items-center gap-1.5 bg-zinc-950/40 p-1.5 rounded-2xl border border-zinc-800/50">
                   <button 
-                    onClick={() => setActivePrintOrderId(activePrintOrderId === pedido.id ? null : pedido.id)}
-                    className={`p-3 rounded-xl transition-all border ${activePrintOrderId === pedido.id ? 'bg-blue-500 text-white border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-zinc-800/50 hover:bg-blue-500/20 text-zinc-600 hover:text-blue-500 border-transparent hover:border-blue-500/20'}`}
-                    title="Opções de Impressão"
+                    onClick={() => handlePrint(pedido, 'a4')}
+                    className="p-2.5 rounded-xl bg-zinc-900/50 hover:bg-blue-500/20 text-zinc-600 hover:text-blue-400 transition-all border border-transparent hover:border-blue-500/20"
+                    title="Imprimir A4"
                   >
-                    <Printer className="w-4 h-4" />
+                    <FileText className="w-3.5 h-3.5" />
                   </button>
-
-                  {/* Menu de Impressão Inline */}
-                  <AnimatePresence>
-                    {activePrintOrderId === pedido.id && (
-                      <>
-                        <motion.div 
-                          initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                          className="absolute bottom-full right-0 mb-3 bg-zinc-950 border border-zinc-800 p-2 rounded-2xl shadow-2xl z-50 flex flex-col gap-1 min-w-[180px]"
-                        >
-                          <div className="text-[9px] font-black text-zinc-600 uppercase tracking-widest px-3 py-1 border-b border-zinc-900 mb-1">Modelos Disponíveis</div>
-                          <button 
-                            onClick={() => { handlePrint(pedido, 'a4'); setActivePrintOrderId(null); }}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-400 hover:text-blue-400 transition-colors text-left"
-                          >
-                            <FileText className="w-4 h-4" />
-                            <div className="flex flex-col">
-                              <span className="text-[10px] font-black uppercase tracking-tight">Papel A4 (Padrão)</span>
-                              <span className="text-[8px] font-bold text-zinc-600">Relatório Completo</span>
-                            </div>
-                          </button>
-                          <button 
-                            onClick={() => { handlePrint(pedido, 'thermal'); setActivePrintOrderId(null); }}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-400 hover:text-yellow-500 transition-colors text-left"
-                          >
-                            <Printer className="w-4 h-4" />
-                            <div className="flex flex-col">
-                              <span className="text-[10px] font-black uppercase tracking-tight">Térmica (80mm)</span>
-                              <span className="text-[8px] font-bold text-zinc-600">Cupom do Motoboy</span>
-                            </div>
-                          </button>
-                          <button 
-                            onClick={() => { handlePrint(pedido, 'pdv'); setActivePrintOrderId(null); }}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-400 hover:text-green-400 transition-colors text-left border-t border-zinc-900 mt-1 pt-2"
-                          >
-                            <ShoppingCart className="w-4 h-4" />
-                            <div className="flex flex-col">
-                              <span className="text-[10px] font-black uppercase tracking-tight">PDV (Balcão)</span>
-                              <span className="text-[8px] font-bold text-zinc-600">Simplificado Rápido</span>
-                            </div>
-                          </button>
-                        </motion.div>
-                        {/* Overlay invisível para fechar ao clicar fora */}
-                        <div className="fixed inset-0 z-40" onClick={() => setActivePrintOrderId(null)}></div>
-                      </>
-                    )}
-                  </AnimatePresence>
+                  <button 
+                    onClick={() => handlePrint(pedido, 'thermal')}
+                    className="p-2.5 rounded-xl bg-zinc-900/50 hover:bg-yellow-500/20 text-zinc-600 hover:text-yellow-500 transition-all border border-transparent hover:border-yellow-500/20"
+                    title="Imprimir Térmica"
+                  >
+                    <Printer className="w-3.5 h-3.5" />
+                  </button>
+                  <button 
+                    onClick={() => handlePrint(pedido, 'pdv')}
+                    className="p-2.5 rounded-xl bg-zinc-900/50 hover:bg-green-500/20 text-zinc-600 hover:text-green-500 transition-all border border-transparent hover:border-green-500/20"
+                    title="Imprimir PDV"
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                  </button>
                 </div>
 
+                <div className="flex items-center gap-2">
                   <button 
                     onClick={() => handleDelete(pedido.id)}
-                    className="p-3 rounded-xl bg-zinc-800/50 hover:bg-red-500/20 text-zinc-600 hover:text-red-500 transition-all border border-transparent hover:border-red-500/20"
+                    className="p-2.5 rounded-xl bg-zinc-800/30 hover:bg-red-500/20 text-zinc-700 hover:text-red-500 transition-all"
                     title="Apagar do Painel"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
+                </div>
               </div>
             </div>
           </motion.div>
