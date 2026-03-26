@@ -57,14 +57,34 @@ export default function EnderecoPage() {
     if (salvo) {
       try {
         const data = JSON.parse(salvo);
-        setRua(data.rua || '');
-        setNumero(data.numero || '');
-        setComplemento(data.complemento || '');
-        setBairro(data.bairro || '');
-        if (data.tipo === 'RETIRADA') setTipoEntrega('RETIRADA');
+        if (data.tipo === 'RETIRADA') {
+          setTipoEntrega('RETIRADA');
+          // Se era retirada, deixamos os campos de entrega limpos para facilitar a vida do cliente
+          setRua('');
+          setNumero('');
+          setComplemento('');
+          setBairro('');
+        } else {
+          setRua(data.rua || '');
+          setNumero(data.numero || '');
+          setComplemento(data.complemento || '');
+          setBairro(data.bairro || '');
+          setTipoEntrega('ENTREGA');
+        }
       } catch (e) {}
     }
   }, []);
+
+  // Limpa campos se houver placeholders de retirada ao mudar para Entrega
+  useEffect(() => {
+    if (tipoEntrega === 'ENTREGA') {
+      if (rua === 'Retirada na Loja') setRua('');
+      if (numero === 'Impacto') setNumero('');
+      if (complemento === 'Sede Física') setComplemento('');
+      // Não limpamos o bairro se for uma escolha válida, mas SANTA RITA é o default da retirada
+      if (bairro === 'SANTA RITA') setBairro('');
+    }
+  }, [tipoEntrega, rua, numero, complemento, bairro]);
 
   const handleSalvar = (e: React.FormEvent) => {
     e.preventDefault();
