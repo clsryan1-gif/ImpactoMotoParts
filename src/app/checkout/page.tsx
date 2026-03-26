@@ -65,14 +65,14 @@ export default function CheckoutPage() {
     const metodoLabel: Record<string, string> = {
       'PIX': 'PIX (Pagamento Instantâneo)',
       'CARTAO_CREDITO': '💳 Cartão de Crédito',
-      'WHATSAPP': '🟢 Combinar via WhatsApp'
+      'WHATSAPP': '✅ Combinar via WhatsApp'
     };
 
-    let msg = `🔥 *NOVO PEDIDO: IMPACTO MOTO PARTS* 🔥\n`;
-    msg += `🚀 *ALTA PERFORMANCE EM SUAS MÃOS* 🚀\n`;
+    let msg = `🔴 *NOVO PEDIDO: IMPACTO MOTO PARTS* 🔴\n`;
+    msg += `⚡ *ALTA PERFORMANCE EM SUAS MÃOS* ⚡\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     
-    msg += `🆔 *Nº DO PEDIDO:* #${orderId ? orderId.substring(0, 8).toUpperCase() : 'PENDENTE'}\n`;
+    msg += `🎫 *Nº DO PEDIDO:* #${orderId ? orderId.substring(0, 8).toUpperCase() : 'PENDENTE'}\n`;
     msg += `👤 *PILOTO:* ${clienteNome}\n`;
     msg += `📅 *DATA:* ${data} às ${horaAtual}\n\n`;
     
@@ -80,9 +80,9 @@ export default function CheckoutPage() {
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
     
     groupedCart.forEach((p, i) => {
-      msg += `🔹 *${p.nome}*\n`;
-      msg += `   └─ ⚙️ Categoria: ${p.categoria}\n`;
-      msg += `   └─ 🔢 Quantidade: ${p.quantity}\n`;
+      msg += `🔸 *${p.nome}*\n`;
+      msg += `   └─ 🔧 Categoria: ${p.categoria}\n`;
+      msg += `   └─ 📦 Quantidade: ${p.quantity}\n`;
       msg += `   └─ 💰 Subtotal: ${BRL(p.preco * p.quantity)}\n\n`;
     });
  
@@ -91,7 +91,7 @@ export default function CheckoutPage() {
  
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
     msg += `💵 *SUBTOTAL:* ${BRL(subtotalCalculado)}\n`;
-    msg += `🚚 *FRETE:* ${endereco?.tipo === 'RETIRADA' ? '🏁 RETIRADA NA LOJA' : (taxaEntregaCalculada > 0 ? BRL(taxaEntregaCalculada) : '✨ GRÁTIS')}\n`;
+    msg += `🚚 *FRETE:* ${endereco?.tipo === 'RETIRADA' ? '🏁 RETIRADA NA LOJA' : (taxaEntregaCalculada > 0 ? BRL(taxaEntregaCalculada) : '⭐ GRÁTIS')}\n`;
     msg += `🏆 *TOTAL FINAL:* *${BRL(total)}*\n`;
     msg += `💳 *FORMA DE PAGAMENTO:* ${metodoLabel[metodoFinal] || metodoFinal}\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
@@ -105,7 +105,7 @@ export default function CheckoutPage() {
         msg += `📍 *DESTINO DA ENTREGA:*\n`;
         msg += `🏠 *Rua:* ${endereco.rua}, ${endereco.numero}\n`;
         msg += `🏙️ *Bairro:* ${endereco.bairro}\n`;
-        if (endereco.complemento) msg += `📑 *Compl:* ${endereco.complemento}\n`;
+        if (endereco.complemento) msg += `📄 *Compl:* ${endereco.complemento}\n`;
         msg += `\n`;
       }
     }
@@ -113,7 +113,7 @@ export default function CheckoutPage() {
     msg += `🛡️ *DADOS REGISTRADOS COM SUCESSO!*\n`;
     msg += `Impacto Moto Parts: Sua loja de elite para peças de alta performance! 🛠️🏍️\n\n`;
     msg += `------------------------------------------\n`;
-    msg += `*Olá, acabei de fechar meu pedido pelo site! Aguardo o retorno para alinhar os últimos detalhes e acelerar a entrega.* 🏁🔥`;
+    msg += `*Olá, acabei de fechar meu pedido pelo site! Aguardo o retorno para alinhar os últimos detalhes e acelerar a entrega.* 🏁🔴`;
 
     window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`, '_blank');
   };
