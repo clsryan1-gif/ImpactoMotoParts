@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { ShoppingCart, ChevronLeft, Trash2, MessageCircle, Info, ShieldCheck, Zap, AlertCircle } from 'lucide-react';
+import { ShoppingCart, ChevronLeft, Trash2, MessageCircle, Info, ShieldCheck, Zap, AlertCircle, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -32,8 +32,13 @@ export default function CheckoutPage() {
   // Form controls
   const [pagamento, setPagamento] = useState('PIX');
   const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const [endereco, setEndereco] = useState<{rua: string, numero: string, complemento?: string, bairro: string, taxa: number} | null>(null);
 
-  const total = useMemo(() => carrinho.reduce((a, p) => a + p.preco, 0), [carrinho]);
+  const total = useMemo(() => {
+    const totalItens = carrinho.reduce((a, p) => a + p.preco, 0);
+    const taxaEntrega = endereco?.taxa || 0;
+    return totalItens + taxaEntrega;
+  }, [carrinho, endereco]);
   
   const groupedCart = useMemo(() => {
     const map = new Map<string, Produto & { quantity: number }>();
@@ -69,6 +74,12 @@ export default function CheckoutPage() {
     msg += `🆔 *PEDIDO:* #${orderId ? orderId.substring(0, 8).toUpperCase() : 'PENDENTE'}\n`;
     msg += `🗓️ *DATA:* ${data} às ${horaAtual}\n`;
     msg += `👤 *PILOTO:* ${clienteNome}\n`;
+    
+    if (endereco) {
+      msg += `📍 *ENTREGA:* ${endereco.rua}, ${endereco.numero}${endereco.complemento ? ` (${endereco.complemento})` : ''}\n`;
+      msg += `🏘️ *BAIRRO:* ${endereco.bairro}\n`;
+    }
+    
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     
     groupedCart.forEach((p, i) => {
@@ -79,6 +90,12 @@ export default function CheckoutPage() {
     });
 
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    
+    const taxaEntrega = endereco?.taxa || 0;
+    const subtotal = total - taxaEntrega;
+
+    msg += `📦 *SUBTOTAL:* ${BRL(subtotal)}\n`;
+    msg += `🚚 *ENTREGA:* ${taxaEntrega > 0 ? BRL(taxaEntrega) : 'GRÁTIS'}\n`;
     msg += `💰 *TOTAL FINAL: ${BRL(total)}*\n`;
     msg += `💳 *PAGAMENTO:* ${metodoLabel[metodoFinal] || metodoFinal}\n`;
     msg += `✅ *STATUS:* Pedido Registrado no Sistema\n\n`;
@@ -103,11 +120,23 @@ export default function CheckoutPage() {
       setCarregando(false);
     };
 
+    // Carregar endereço
+    const carregarEndereco = () => {
+      const salvo = localStorage.getItem('@impacto-endereco');
+      if (salvo) {
+        try {
+          setEndereco(JSON.parse(salvo));
+        } catch (e) {}
+      }
+    };
+
     carregarCarrinho();
+    carregarEndereco();
 
     // Sincronizar entre abas
     const handleStorage = (e: StorageEvent) => {
       if (e.key === '@impacto-carrinho') carregarCarrinho();
+      if (e.key === '@impacto-endereco') carregarEndereco();
     };
 
     window.addEventListener('storage', handleStorage);
@@ -132,6 +161,12 @@ export default function CheckoutPage() {
     if (!session) {
       showToast("⚠️ Você precisa Entrar ou Criar Conta primeiro.", "error");
       router.push('/login');
+      return;
+    }
+
+    if (!endereco) {
+      showToast("📍 Por favor, defina o endereço de entrega.", "error");
+      router.push('/checkout/endereco');
       return;
     }
 
@@ -365,13 +400,49 @@ export default function CheckoutPage() {
                 
                 <div className="space-y-4 mb-6 relative z-10">
                   <div className="flex justify-between items-center text-sm text-zinc-400">
-                    <span>Peças ({carrinho.length} itens)</span>
-                    <span className="text-zinc-200 font-medium">{BRL(total)}</span>
+                    <span className="flex items-center gap-1">Subtotal</span>
+                    <span className="text-zinc-200 font-medium">{BRL(total - (endereco?.taxa || 0))}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm text-zinc-400">
                     <span className="flex items-center gap-1">Frete / Entrega <AlertCircle className="w-3 h-3 text-yellow-500/70" /></span>
-                    <span className="text-yellow-500 text-[10px] font-black uppercase px-2 py-0.5 bg-yellow-500/10 rounded">Grátis Beta</span>
+                    <span className={endereco?.taxa ? "text-zinc-200 font-medium" : "text-yellow-500 text-[10px] font-black uppercase px-2 py-0.5 bg-yellow-500/10 rounded"}>
+                      {endereco?.taxa ? BRL(endereco.taxa) : 'Grátis Beta'}
+                    </span>
                   </div>
+                </div>
+
+                {/* Seção de Endereço */}
+                <div className="mb-8 relative z-10">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-bold text-zinc-400 uppercase tracking-widest text-[10px]">Endereço de Entrega</span>
+                    <Link href="/checkout/endereco">
+                       <span className="text-impacto-yellow text-[9px] font-black uppercase hover:underline cursor-pointer">Alterar</span>
+                    </Link>
+                  </div>
+                  
+                  {endereco ? (
+                    <motion.div 
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="bg-zinc-950/50 border border-zinc-800 p-4 rounded-2xl flex items-start gap-3"
+                    >
+                      <MapPin className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                      <div className="text-xs">
+                        <p className="text-zinc-200 font-bold leading-tight mb-1">{endereco.rua}, {endereco.numero}</p>
+                        <p className="text-zinc-500">{endereco.bairro}{endereco.complemento ? ` - ${endereco.complemento}` : ''}</p>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <Link href="/checkout/endereco">
+                      <motion.div 
+                        whileHover={{ scale: 1.02, borderColor: 'var(--impacto-yellow)' }}
+                        className="border-2 border-dashed border-zinc-800 p-6 rounded-2xl flex flex-col items-center justify-center gap-2 group cursor-pointer transition-all"
+                      >
+                        <MapPin className="w-6 h-6 text-zinc-700 group-hover:text-impacto-yellow transition-colors" />
+                        <span className="text-[10px] font-black text-zinc-600 group-hover:text-zinc-400 uppercase tracking-widest">Definir Endereço</span>
+                      </motion.div>
+                    </Link>
+                  )}
                 </div>
                 
                 {/* Meios de Pagamento */}
