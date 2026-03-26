@@ -156,6 +156,8 @@ export default function CheckoutPage() {
     setCarrinho(prev => {
       const novo = prev.filter(item => String(item.id) !== String(id));
       localStorage.setItem('@impacto-carrinho', JSON.stringify(novo));
+      // Notificar componentes globais para atualizar badges
+      window.dispatchEvent(new CustomEvent('cart-updated'));
       return novo;
     });
   };
@@ -163,6 +165,8 @@ export default function CheckoutPage() {
   const limparCarrinho = () => {
     setCarrinho([]);
     localStorage.removeItem('@impacto-carrinho');
+    // Notificar componentes globais para atualizar badges
+    window.dispatchEvent(new CustomEvent('cart-updated'));
   };
 
   const processarCheckoutNativo = async () => {

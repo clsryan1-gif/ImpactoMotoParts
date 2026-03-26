@@ -29,7 +29,7 @@ export default function Header() {
       if (saved) {
         try {
           const items = JSON.parse(saved);
-          setCartCount(Array.isArray(items) ? items.length : 0);
+          setCartCount(Array.isArray(items) ? items.filter(Boolean).length : 0);
         } catch (e) {
           setCartCount(0);
         }
@@ -57,8 +57,9 @@ export default function Header() {
   // Ocultar cabeçalho em páginas de administração ou autenticação
   const isAuthPage = pathname === '/login' || pathname === '/cadastro';
   const isAdminPage = pathname?.startsWith('/admin');
+  const isCheckoutPage = pathname?.startsWith('/checkout');
   
-  if (isAuthPage || isAdminPage) return null;
+  if (isAuthPage || isAdminPage || isCheckoutPage) return null;
 
   return (
     <motion.header 

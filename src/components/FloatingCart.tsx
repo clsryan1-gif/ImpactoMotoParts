@@ -16,7 +16,7 @@ export default function FloatingCart() {
       if (saved) {
         try {
           const items = JSON.parse(saved);
-          setCartCount(Array.isArray(items) ? items.length : 0);
+          setCartCount(Array.isArray(items) ? items.filter(Boolean).length : 0);
         } catch (e) {
           setCartCount(0);
         }
@@ -37,7 +37,7 @@ export default function FloatingCart() {
   }, []);
 
   // Não mostrar no checkout ou se estiver vazio
-  if (pathname === '/checkout' || cartCount === 0) return null;
+  if (pathname?.startsWith('/checkout') || cartCount === 0) return null;
 
   return (
     <AnimatePresence>
