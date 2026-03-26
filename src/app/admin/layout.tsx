@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Package, ShoppingCart, LayoutDashboard, LogOut, ChevronLeft, Database } from "lucide-react";
+import { Package, ShoppingCart, LayoutDashboard, LogOut, ChevronLeft, Database, Wallet, Users, Terminal, PlusCircle } from "lucide-react";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -34,19 +34,42 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <h2 className="text-red-500 font-bold tracking-widest uppercase text-[9px] md:text-xs">Admin Dashboard</h2>
         </div>
 
-        <nav className="flex flex-row md:flex-col gap-4 md:gap-4">
-          <Link href="/admin" className="flex items-center gap-2 md:gap-3 text-zinc-400 hover:text-white transition group" title="Resumo">
+        <nav className="flex flex-row md:flex-col gap-2 md:gap-4 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-hide">
+          <Link href="/admin" className="flex items-center gap-2 md:gap-3 px-3 py-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition group" title="Resumo">
             <LayoutDashboard className="w-4 h-4 md:w-5 md:h-5 group-hover:text-impacto-yellow transition" />
-            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase hidden sm:inline md:inline">Resumo</span>
+            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase whitespace-nowrap">Resumo</span>
           </Link>
-          <Link href="/admin/produtos" className="flex items-center gap-2 md:gap-3 text-zinc-400 hover:text-white transition group" title="Estoque">
+          
+          <Link href="/admin/caixa" className="flex items-center gap-2 md:gap-3 px-3 py-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition group" title="Financeiro">
+            <Wallet className="w-4 h-4 md:w-5 md:h-5 group-hover:text-green-500 transition" />
+            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase whitespace-nowrap">Financeiro</span>
+          </Link>
+
+          <Link href="/admin/produtos" className="flex items-center gap-2 md:gap-3 px-3 py-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition group" title="Estoque">
             <Package className="w-4 h-4 md:w-5 md:h-5 group-hover:text-impacto-orange transition" />
-            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase hidden sm:inline md:inline">Produtos</span>
+            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase whitespace-nowrap">Produtos</span>
           </Link>
-          <Link href="/admin/pedidos" className="flex items-center gap-2 md:gap-3 px-3 py-2 rounded-xl bg-impacto-yellow/10 border border-impacto-yellow/20 text-impacto-yellow hover:text-white transition group relative overflow-hidden" title="Vendas">
-            <div className="absolute top-0 left-0 w-1 h-full bg-impacto-yellow shadow-[0_0_10px_rgba(255,183,0,0.5)]"></div>
-            <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
-            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase hidden sm:inline md:inline">Vendas / Pedidos</span>
+
+          <Link href="/admin/pedidos" className="flex items-center gap-2 md:gap-3 px-3 py-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition group" title="Vendas">
+            <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 group-hover:text-impacto-yellow transition" />
+            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase whitespace-nowrap">Vendas</span>
+          </Link>
+
+          <Link href="/admin/usuarios" className="flex items-center gap-2 md:gap-3 px-3 py-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition group" title="Pilotos">
+            <Users className="w-4 h-4 md:w-5 md:h-5 group-hover:text-purple-500 transition" />
+            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase whitespace-nowrap">Pilotos</span>
+          </Link>
+
+          <Link href="/admin/acts" className="flex items-center gap-2 md:gap-3 px-3 py-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition group" title="Atos">
+            <Terminal className="w-4 h-4 md:w-5 md:h-5 group-hover:text-impacto-red transition" />
+            <span className="font-black tracking-widest text-[9px] md:text-[10px] uppercase whitespace-nowrap">Atos</span>
+          </Link>
+
+          <div className="h-px bg-zinc-800/50 my-2 hidden md:block"></div>
+
+          <Link href="/admin/produtos/novo" className="hidden md:flex items-center gap-3 px-3 py-2 rounded-xl bg-impacto-orange/10 border border-impacto-orange/20 text-impacto-orange hover:bg-impacto-orange hover:text-zinc-950 transition group" title="Nova Peça">
+            <PlusCircle className="w-5 h-5" />
+            <span className="font-black tracking-widest text-[10px] uppercase">Nova Peça</span>
           </Link>
         </nav>
 

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Package, ShoppingCart, Users, Wallet, TrendingUp, AlertTriangle, ArrowRight, PlusCircle, UserPlus, Receipt, Gauge, Terminal } from "lucide-react";
+import { Package, ShoppingCart, Users, Wallet, TrendingUp, AlertTriangle, ArrowRight, PlusCircle, UserPlus, Receipt, Gauge, Terminal, Database } from "lucide-react";
 import Link from "next/link";
 
 const BRL = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -84,8 +84,9 @@ export default async function AdminDashboard() {
             </div>
             <TrendingUp className="w-4 h-4 text-impacto-yellow animate-bounce hidden md:block" />
           </div>
-          <p className="text-zinc-500 font-black uppercase tracking-[0.2em] text-[7px] md:text-[10px] mb-0.5 md:mb-1">Saldo em Caixa</p>
+          <p className="text-white font-black uppercase tracking-[0.2em] text-[7px] md:text-[10px] mb-0.5 md:mb-1">Saldo em Caixa</p>
           <div className={`text-lg md:text-3xl font-black ${saldo >= 0 ? 'text-white' : 'text-impacto-red'} drop-shadow-[0_0_15px_rgba(255,204,0,0.2)]`}>{BRL(saldo)}</div>
+          <p className="text-[6px] md:text-[8px] text-zinc-500 font-bold uppercase mt-2 tracking-tighter">Capital disponível para balanço imediato</p>
         </Link>
 
         {/* Faturamento de Vendas */}
@@ -94,8 +95,9 @@ export default async function AdminDashboard() {
           <div className="w-8 h-8 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-blue-500/10 flex items-center justify-center mb-2 md:mb-4 border border-blue-500/20">
             <Gauge className="w-4 h-4 md:w-6 md:h-6 text-blue-500" />
           </div>
-          <p className="text-zinc-500 font-black uppercase tracking-[0.2em] text-[7px] md:text-[10px] mb-0.5 md:mb-1">Vendas Pagas</p>
+          <p className="text-white font-black uppercase tracking-[0.2em] text-[7px] md:text-[10px] mb-0.5 md:mb-1">Vendas Pagas</p>
           <div className="text-lg md:text-3xl font-black text-white">{BRL(totalFaturado)}</div>
+          <p className="text-[6px] md:text-[8px] text-zinc-500 font-bold uppercase mt-2 tracking-tighter">Total faturado em pedidos concluídos</p>
         </div>
 
         {/* Peças Catalogo */}
@@ -104,8 +106,9 @@ export default async function AdminDashboard() {
           <div className="w-8 h-8 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-impacto-orange/10 flex items-center justify-center mb-2 md:mb-4 border border-impacto-orange/20">
             <Package className="w-4 h-4 md:w-6 md:h-6 text-impacto-orange" />
           </div>
-          <p className="text-zinc-500 font-black uppercase tracking-[0.2em] text-[7px] md:text-[10px] mb-0.5 md:mb-1">Estoque</p>
+          <p className="text-white font-black uppercase tracking-[0.2em] text-[7px] md:text-[10px] mb-0.5 md:mb-1">Estoque</p>
           <div className="text-lg md:text-3xl font-black text-white">{productsCount} <span className="text-[8px] md:text-xs text-zinc-600">itens</span></div>
+          <p className="text-[6px] md:text-[8px] text-zinc-500 font-bold uppercase mt-2 tracking-tighter">Variedade de peças cadastradas</p>
         </Link>
 
         {/* Usuários */}
@@ -114,8 +117,9 @@ export default async function AdminDashboard() {
           <div className="w-8 h-8 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-purple-500/10 flex items-center justify-center mb-2 md:mb-4 border border-purple-500/20">
             <Users className="w-4 h-4 md:w-6 md:h-6 text-purple-400" />
           </div>
-          <p className="text-zinc-500 font-black uppercase tracking-[0.2em] text-[7px] md:text-[10px] mb-0.5 md:mb-1">Pilotos</p>
+          <p className="text-white font-black uppercase tracking-[0.2em] text-[7px] md:text-[10px] mb-0.5 md:mb-1">Pilotos</p>
           <div className="text-lg md:text-3xl font-black text-white">{usersCount} <span className="text-[8px] md:text-xs text-zinc-600">contas</span></div>
+          <p className="text-[6px] md:text-[8px] text-zinc-500 font-bold uppercase mt-2 tracking-tighter">Base de dados e clientes VIP</p>
         </Link>
 
       </div>
@@ -129,28 +133,38 @@ export default async function AdminDashboard() {
            {/* Atalhos Estratégicos */}
            <section>
               <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-4 flex items-center gap-2">
-                 <ArrowRight className="w-3 h-3 text-impacto-red" /> Atalhos Estratégicos
+                 <Terminal className="w-3 h-3 text-impacto-yellow animate-pulse" /> Console de Ações Rápidas
               </h2>
-              <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3">
-                 <Link href="/admin/produtos/novo" className="bg-zinc-900/60 border border-zinc-800 p-3 md:p-4 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-2 hover:bg-impacto-orange transition-colors group">
-                    <PlusCircle className="w-4 h-4 md:w-5 md:h-5 text-zinc-400 group-hover:text-zinc-950 transition-colors" />
-                    <span className="text-[8px] md:text-[9px] font-black uppercase text-zinc-500 group-hover:text-zinc-950">Nova Peça</span>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3">
+                 <Link href="/admin/produtos/novo" className="bg-zinc-900/60 border border-zinc-800 p-3 md:p-5 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-3 hover:bg-impacto-orange transition-all group hover:scale-[1.02] shadow-lg">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-950 transition-colors">
+                       <PlusCircle className="w-4 h-4 md:w-5 md:h-5 text-impacto-orange group-hover:text-white transition-colors" />
+                    </div>
+                    <span className="text-[8px] md:text-[9px] font-black uppercase text-zinc-500 group-hover:text-zinc-950 text-center">Nova Peça</span>
                  </Link>
-                 <Link href="/admin/caixa" className="bg-zinc-900/60 border border-zinc-800 p-3 md:p-4 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-2 hover:bg-impacto-yellow transition-colors group">
-                    <Receipt className="w-4 h-4 md:w-5 md:h-5 text-zinc-400 group-hover:text-zinc-950 transition-colors" />
-                    <span className="text-[8px] md:text-[9px] font-black uppercase text-zinc-500 group-hover:text-zinc-950">Lançamento</span>
+                 <Link href="/admin/caixa" className="bg-zinc-900/60 border border-zinc-800 p-3 md:p-5 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-3 hover:bg-green-600 transition-all group hover:scale-[1.02] shadow-lg">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-950 transition-colors">
+                       <Receipt className="w-4 h-4 md:w-5 md:h-5 text-green-500 group-hover:text-white transition-colors" />
+                    </div>
+                    <span className="text-[8px] md:text-[9px] font-black uppercase text-zinc-500 group-hover:text-zinc-950 text-center">Lançamento</span>
                  </Link>
-                 <Link href="/admin/usuarios" className="bg-zinc-900/60 border border-zinc-800 p-3 md:p-4 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-2 hover:bg-white transition-colors group">
-                    <UserPlus className="w-4 h-4 md:w-5 md:h-5 text-zinc-400 group-hover:text-zinc-950 transition-colors" />
-                    <span className="text-[8px] md:text-[9px] font-black uppercase text-zinc-500 group-hover:text-zinc-950 text-center">Piloto</span>
+                 <Link href="/admin/usuarios" className="bg-zinc-900/60 border border-zinc-800 p-3 md:p-5 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-3 hover:bg-purple-600 transition-all group hover:scale-[1.02] shadow-lg">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-950 transition-colors">
+                       <UserPlus className="w-4 h-4 md:w-5 md:h-5 text-purple-400 group-hover:text-white transition-colors" />
+                    </div>
+                    <span className="text-[8px] md:text-[9px] font-black uppercase text-zinc-500 group-hover:text-zinc-950 text-center">Novo Piloto</span>
                  </Link>
-                 <Link href="/admin/pedidos" className="bg-zinc-900/60 border border-zinc-800 p-3 md:p-4 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-2 hover:bg-zinc-100 transition-colors group">
-                    <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-zinc-400 group-hover:text-zinc-950 transition-colors" />
-                    <span className="text-[8px] md:text-[9px] font-black uppercase text-zinc-500 group-hover:text-zinc-950">Vendas</span>
+                 <Link href="/admin/pedidos" className="bg-zinc-900/60 border border-zinc-800 p-3 md:p-5 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-3 hover:bg-impacto-yellow transition-all group hover:scale-[1.02] shadow-lg">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-950 transition-colors">
+                       <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-impacto-yellow group-hover:text-zinc-950 transition-colors" />
+                    </div>
+                    <span className="text-[8px] md:text-[9px] font-black uppercase text-zinc-500 group-hover:text-zinc-950 text-center">Gerenciar Vendas</span>
                  </Link>
-                 <Link href="/admin/acts" className="bg-zinc-900/60 border border-zinc-800 p-3 md:p-4 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-2 hover:bg-impacto-yellow transition-colors group">
-                    <Terminal className="w-4 h-4 md:w-5 md:h-5 text-zinc-400 group-hover:text-zinc-950 transition-colors" />
-                    <span className="text-[8px] md:text-[9px] font-black uppercase text-zinc-500 group-hover:text-zinc-950">Atos</span>
+                 <Link href="/admin/acts" className="bg-zinc-900/60 border border-zinc-800 p-3 md:p-5 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-3 hover:bg-white transition-all group hover:scale-[1.02] shadow-lg">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-950 transition-colors">
+                       <Database className="w-4 h-4 md:w-5 md:h-5 text-white group-hover:text-zinc-950 transition-colors" />
+                    </div>
+                    <span className="text-[8px] md:text-[9px] font-black uppercase text-zinc-500 group-hover:text-zinc-950 text-center">Logs do Sist.</span>
                  </Link>
               </div>
            </section>
@@ -200,13 +214,13 @@ export default async function AdminDashboard() {
               <div className="space-y-4">
                  {lowStock.length > 0 ? (
                     lowStock.map((p: any) => (
-                       <div key={p.id} className="bg-zinc-900/50 border border-red-500/10 p-4 rounded-2xl group hover:border-red-500/30 transition-colors">
+                       <div key={p.id} className="bg-zinc-900/50 border border-red-500/10 p-4 rounded-2xl group hover:border-red-500/40 transition-all hover:scale-[1.02]">
                           <div className="flex justify-between items-start mb-2">
                              <h3 className="text-[11px] font-black text-white uppercase truncate max-w-[150px]">{p.nome}</h3>
-                             <span className="bg-red-500/20 text-red-500 text-[9px] font-black px-2 py-0.5 rounded-full">{p.estoque} UN</span>
+                             <span className="bg-red-500/20 text-red-500 text-[9px] font-black px-2 py-0.5 rounded-full animate-pulse">{p.estoque} UN</span>
                           </div>
                           <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                             <div className="bg-red-600 h-full" style={{ width: `${(p.estoque/10) * 100}%` }}></div>
+                             <div className="bg-red-600 h-full shadow-[0_0_10px_rgba(239,68,68,0.5)]" style={{ width: `${(p.estoque/10) * 100}%` }}></div>
                           </div>
                           <Link href="/admin/produtos">
                              <button className="w-full mt-3 text-[9px] font-black uppercase text-zinc-600 group-hover:text-red-500 transition-colors flex items-center justify-center gap-1">
@@ -216,14 +230,20 @@ export default async function AdminDashboard() {
                        </div>
                     ))
                  ) : (
-                    <div className="py-10 border border-dashed border-zinc-800 rounded-2xl text-center">
-                       <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest px-4">Estoque saudável. Nenhuma peça em nível crítico.</p>
+                    <div className="py-12 border border-dashed border-zinc-800 rounded-3xl text-center flex flex-col items-center gap-4 bg-zinc-900/10 group">
+                       <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center border border-green-500/20 group-hover:bg-green-500/20 transition-all">
+                          <Package className="w-6 h-6 text-green-500" />
+                       </div>
+                       <div className="space-y-1">
+                         <p className="text-[9px] font-black text-white uppercase tracking-widest">Estoque Seguro</p>
+                         <p className="text-[7px] font-bold text-zinc-600 uppercase">Nenhuma peça em nível crítico detectada.</p>
+                       </div>
                     </div>
                  )}
                  
-                 <div className="pt-4 border-t border-zinc-900">
-                    <p className="text-[9px] text-zinc-500 font-bold leading-relaxed uppercase tracking-tighter">
-                       Dica de Sucesso: Manter o estoque acima de 5 unidades evita cancelamentos e melhora sua reputação no catálogo.
+                 <div className="pt-6 border-t border-zinc-900">
+                    <p className="text-[9px] text-zinc-500 font-bold leading-relaxed uppercase tracking-tighter italic">
+                      💡 Didática: Manter o estoque acima de 5 unidades evita cancelamentos e melhora sua reputação no catálogo. O sistema monitora isso em tempo real.
                     </p>
                  </div>
               </div>
