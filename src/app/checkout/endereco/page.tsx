@@ -7,35 +7,39 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
-const BAIRROS = [
-  // SANTA RITA (Base da Loja ou Próximo)
-  { nome: "Tibiri (Santa Rita)", taxa: 10 },
-  { nome: "Marcos Moura (Santa Rita)", taxa: 12 },
-  { nome: "Heitel Santiago (Santa Rita)", taxa: 12 },
-  { nome: "Várzea Nova (Santa Rita)", taxa: 10 },
-  { nome: "Centro (Santa Rita)", taxa: 8 },
-  { nome: "Alto das Populares (Santa Rita)", taxa: 10 },
-  { nome: "Açude (Santa Rita)", taxa: 10 },
-  { nome: "Popular (Santa Rita)", taxa: 10 },
-  
-  // BAYEUX (Distância Média)
-  { nome: "Centro (Bayeux)", taxa: 15 },
-  { nome: "Mário Andreaza (Bayeux)", taxa: 18 },
-  { nome: "Rio do Meio (Bayeux)", taxa: 15 },
-  { nome: "Comercial Norte (Bayeux)", taxa: 15 },
-  { nome: "Brasília (Bayeux)", taxa: 15 },
-  { nome: "Sesi (Bayeux)", taxa: 15 },
-  { nome: "Tambay (Bayeux)", taxa: 15 },
-  { nome: "Imaculada (Bayeux)", taxa: 15 },
-  { nome: "Jardim Aeroporto (Bayeux)", taxa: 18 },
-  { nome: "Alto da Boa Vista (Bayeux)", taxa: 18 },
+const BAIRROS_POR_CIDADE = {
+  "Santa Rita": [
+    { nome: "Tibiri (Santa Rita)", taxa: 10 },
+    { nome: "Marcos Moura (Santa Rita)", taxa: 12 },
+    { nome: "Heitel Santiago (Santa Rita)", taxa: 12 },
+    { nome: "Várzea Nova (Santa Rita)", taxa: 10 },
+    { nome: "Centro (Santa Rita)", taxa: 8 },
+    { nome: "Alto das Populares (Santa Rita)", taxa: 10 },
+    { nome: "Açude (Santa Rita)", taxa: 10 },
+    { nome: "Popular (Santa Rita)", taxa: 10 },
+  ],
+  "Bayeux": [
+    { nome: "Centro (Bayeux)", taxa: 15 },
+    { nome: "Mário Andreaza (Bayeux)", taxa: 18 },
+    { nome: "Rio do Meio (Bayeux)", taxa: 15 },
+    { nome: "Comercial Norte (Bayeux)", taxa: 15 },
+    { nome: "Brasília (Bayeux)", taxa: 15 },
+    { nome: "Sesi (Bayeux)", taxa: 15 },
+    { nome: "Tambay (Bayeux)", taxa: 15 },
+    { nome: "Imaculada (Bayeux)", taxa: 15 },
+    { nome: "Jardim Aeroporto (Bayeux)", taxa: 18 },
+    { nome: "Alto da Boa Vista (Bayeux)", taxa: 18 },
+  ],
+  "Região Próxima": [
+    { nome: "Bairro das Indústrias", taxa: 20 },
+    { nome: "Oitizeiro", taxa: 20 },
+    { nome: "Cruz das Armas", taxa: 22 },
+    { nome: "Funcionários", taxa: 25 }
+  ]
+};
 
-  // REGIÃO PRÓXIMA (JP - Mais Distante)
-  { nome: "Bairro das Indústrias", taxa: 20 },
-  { nome: "Oitizeiro", taxa: 20 },
-  { nome: "Cruz das Armas", taxa: 22 },
-  { nome: "Funcionários", taxa: 25 }
-].sort((a, b) => a.nome.localeCompare(b.nome));
+// Flatten for search/find logic
+const BAIRROS_FLAT = Object.values(BAIRROS_POR_CIDADE).flat();
 
 export default function EnderecoPage() {
   const router = useRouter();
@@ -62,7 +66,7 @@ export default function EnderecoPage() {
     e.preventDefault();
     setLoading(true);
 
-    const b = BAIRROS.find(x => x.nome === bairro);
+    const b = BAIRROS_FLAT.find(x => x.nome === bairro);
     const taxa = b ? b.taxa : 0;
 
     const endereco = { rua, numero, complemento, bairro, taxa };
@@ -166,10 +170,14 @@ export default function EnderecoPage() {
                     className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-12 py-4 outline-none focus:border-impacto-yellow transition-all text-sm appearance-none cursor-pointer"
                   >
                     <option value="" disabled className="bg-zinc-900">Selecione o bairro...</option>
-                    {BAIRROS.map(b => (
-                      <option key={b.nome} value={b.nome} className="bg-zinc-900">
-                        {b.nome} — R$ {b.taxa.toFixed(2)}
-                      </option>
+                    {Object.entries(BAIRROS_POR_CIDADE).map(([cidade, bairros]) => (
+                      <optgroup key={cidade} label={cidade.toUpperCase()} className="bg-zinc-900 text-impacto-yellow font-black">
+                        {bairros.map(b => (
+                          <option key={b.nome} value={b.nome} className="bg-zinc-900 text-white font-sans">
+                            {b.nome} — R$ {b.taxa.toFixed(2)}
+                          </option>
+                        ))}
+                      </optgroup>
                     ))}
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600">
