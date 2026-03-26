@@ -329,6 +329,7 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
     if (res.success) {
       setPedidos(prev => prev.filter(p => p.id !== modalDelete.orderId));
       showToast('Pedido removido do painel!', 'success');
+      setModalDelete({ isOpen: false, orderId: null });
     } else {
       showToast('Erro ao remover pedido.', 'error');
     }

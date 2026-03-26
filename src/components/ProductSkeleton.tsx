@@ -7,7 +7,7 @@ export const ProductSkeleton = () => {
   return (
     <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl overflow-hidden flex flex-col h-full animate-pulse">
       {/* Imagem Placeholder */}
-      <div className="bg-zinc-800 h-40 w-full relative overflow-hidden">
+      <div className="bg-zinc-800 aspect-square w-full relative overflow-hidden">
         <motion.div 
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
           animate={{ x: ['-100%', '100%'] }}

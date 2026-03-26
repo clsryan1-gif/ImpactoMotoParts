@@ -60,6 +60,7 @@ export default function InventoryList({ produtos: initialProdutos }: { produtos:
 
       const updatedProduct = await res.json();
       showToast('Alterações salvas com sucesso!', 'success');
+      setEditId(null);
       router.refresh();
     } catch (err: any) {
       showToast(err.message || 'Erro ao salvar. Tente novamente.', 'error');
@@ -258,14 +259,14 @@ export default function InventoryList({ produtos: initialProdutos }: { produtos:
                 className={`bg-zinc-950/80 border border-zinc-800 p-4 rounded-xl flex items-center gap-4 hover:border-red-500/30 transition-all group [content-visibility:auto] [contain-intrinsic-size:80px] ${!p.ativo ? 'opacity-50 grayscale-[0.5]' : ''}`}
               >
                 {/* Imagem */}
-                <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center p-1 shrink-0 overflow-hidden border border-white/5 relative">
+                <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center p-1 shrink-0 overflow-hidden border border-white/10 relative group-hover:border-red-500/30 transition-colors">
                   {!p.ativo && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
-                      <EyeOff className="w-6 h-6 text-zinc-400" />
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10 backdrop-blur-[1px]">
+                      <EyeOff className="w-5 h-5 text-zinc-400" />
                     </div>
                   )}
                   {p.imagem
-                    ? <img src={p.imagem} alt={p.nome} className="w-full h-full object-contain" />
+                    ? <img src={p.imagem} alt={p.nome} className="w-full h-full object-contain transition-transform group-hover:scale-110 duration-500" />
                     : <Package className="w-6 h-6 text-zinc-600" />
                   }
                 </div>
