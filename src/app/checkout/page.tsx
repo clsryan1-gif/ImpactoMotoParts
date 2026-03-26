@@ -27,7 +27,6 @@ export default function CheckoutPage() {
   
   const [carrinho, setCarrinho] = useState<Produto[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [isHoveringBtn, setIsHoveringBtn] = useState(false);
   
   // Form controls
   const [pagamento, setPagamento] = useState('PIX');
@@ -124,8 +123,15 @@ export default function CheckoutPage() {
       const salvo = localStorage.getItem('@impacto-carrinho');
       if (salvo) {
         try {
-          setCarrinho(JSON.parse(salvo));
-        } catch (e) {}
+          const parsed = JSON.parse(salvo);
+          if (Array.isArray(parsed)) {
+            setCarrinho(parsed);
+          } else {
+            localStorage.removeItem('@impacto-carrinho');
+          }
+        } catch (e) {
+          localStorage.removeItem('@impacto-carrinho');
+        }
       }
       setCarregando(false);
     };
@@ -135,8 +141,15 @@ export default function CheckoutPage() {
       const salvo = localStorage.getItem('@impacto-endereco');
       if (salvo) {
         try {
-          setEndereco(JSON.parse(salvo));
-        } catch (e) {}
+          const parsed = JSON.parse(salvo);
+          if (parsed && typeof parsed === 'object') {
+            setEndereco(parsed);
+          } else {
+            localStorage.removeItem('@impacto-endereco');
+          }
+        } catch (e) {
+          localStorage.removeItem('@impacto-endereco');
+        }
       }
     };
 
@@ -200,8 +213,14 @@ export default function CheckoutPage() {
         })
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Falha no processamento.");
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseError) {
+        throw new Error("Erro de comunicação com o servidor.");
+      }
+      
+      if (!res.ok) throw new Error(data?.message || "Falha no processamento do pedido.");
       
       // Abre o WhatsApp com os detalhes
       enviarPedidoWhatsApp(data.orderId, pagamento);
@@ -563,8 +582,6 @@ export default function CheckoutPage() {
                   whileTap={{ scale: 0.98 }}
                   onClick={processarCheckoutNativo}
                   disabled={!session || loadingCheckout}
-                  onMouseEnter={() => setIsHoveringBtn(true)}
-                  onMouseLeave={() => setIsHoveringBtn(false)}
                   className={`w-full relative overflow-hidden group disabled:opacity-50 rounded-2xl py-6 font-black flex items-center justify-center gap-3 transition-all z-10 
                     ${pagamento === 'WHATSAPP' ? 'bg-[#25D366] hover:bg-[#22c55e] text-white shadow-[0_0_20px_rgba(37,211,102,0.3)]' : 
                       pagamento === 'PIX' ? 'bg-zinc-100 text-zinc-950 shadow-[0_0_30px_rgba(255,255,255,0.2)]' :

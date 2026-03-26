@@ -19,6 +19,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Carrinho vazio ou pagamento não selecionado." }, { status: 400 });
     }
 
+    // Tratamento de segurança: impedir taxas de entrega negativas que descontariam o total
+    const sanitizedTaxaEntrega = Math.max(0, Number(taxaEntrega) || 0);
+
     // Agrupar itens para processar quantidades e baixar estoque corretamente
     const cartItemsMap = new Map<string, { product: any, quantity: number }>();
     
@@ -66,12 +69,12 @@ export async function POST(req: NextRequest) {
       // 1. Criar a ordem
       const newOrder = await tx.order.create({
         data: {
-          userId: (session.user as any).id,
-          total: total + (taxaEntrega || 0),
+          userId: (session.user as any).id || session.user.email,
+          total: total + sanitizedTaxaEntrega,
           status: "PENDENTE",
-          paymentType: paymentType,
-          endereco: typeof endereco === 'object' ? JSON.stringify(endereco) : endereco,
-          taxaEntrega: taxaEntrega || 0,
+          paymentType: String(paymentType),
+          endereco: typeof endereco === 'object' ? JSON.stringify(endereco) : String(endereco || ''),
+          taxaEntrega: sanitizedTaxaEntrega,
           items: {
             create: orderItemsData
           }
