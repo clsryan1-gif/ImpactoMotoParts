@@ -14,6 +14,7 @@ interface Toast {
 
 interface ToastContextType {
   showToast: (message: string, type?: ToastType) => void;
+  clearToasts: () => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -23,12 +24,22 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const showToast = useCallback((message: string, type: ToastType = 'success') => {
     const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, message, type }]);
     
-    // Auto remove after 0.7 seconds
+    setToasts((prev) => {
+      // Limit to 3 toasts to avoid cluttering the screen
+      const next = [...prev, { id, message, type }];
+      if (next.length > 3) return next.slice(1);
+      return next;
+    });
+    
+    // Auto remove after 0.7 seconds (as requested by Ryan)
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 700);
+  }, []);
+
+  const clearToasts = useCallback(() => {
+    setToasts([]);
   }, []);
 
   const removeToast = (id: string) => {
@@ -36,7 +47,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={{ showToast, clearToasts }}>
       {children}
       
       {/* Toast Container */}

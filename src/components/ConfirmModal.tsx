@@ -42,9 +42,9 @@ export default function ConfirmModal({
   };
 
   const btnColors = {
-    danger: 'bg-red-600 hover:bg-red-500 shadow-red-600/20',
-    warning: 'bg-yellow-500 hover:bg-yellow-400 text-black shadow-yellow-500/20',
-    info: 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/20',
+    danger: 'bg-red-600 hover:bg-red-500 shadow-red-600/40 border-b-4 border-red-800 active:border-b-0 active:translate-y-1',
+    warning: 'bg-yellow-500 hover:bg-yellow-400 text-black shadow-yellow-500/40 border-b-4 border-yellow-700 active:border-b-0 active:translate-y-1',
+    info: 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/40 border-b-4 border-blue-800 active:border-b-0 active:translate-y-1',
   };
 
   return (
@@ -52,13 +52,13 @@ export default function ConfirmModal({
       {isOpen && (
         <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 bg-black/80 backdrop-blur-[4px] overflow-y-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-6 shadow-2xl relative mt-[5vh] mb-[5vh] max-h-[85vh] overflow-y-auto custom-scrollbar"
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className={`w-full max-w-md bg-zinc-950 border-2 rounded-[2.5rem] p-8 shadow-2xl relative mt-[5vh] mb-[5vh] max-h-[85vh] overflow-y-auto custom-scrollbar ${type === 'danger' ? 'border-red-600/30' : 'border-yellow-500/30'}`}
           >
             {/* Ambient Glow */}
-            <div className={`absolute -top-24 -right-24 w-48 h-48 rounded-full blur-[80px] opacity-20 ${type === 'danger' ? 'bg-red-600' : 'bg-yellow-500'}`}></div>
+            <div className={`absolute -top-24 -right-24 w-64 h-64 rounded-full blur-[100px] opacity-10 ${type === 'danger' ? 'bg-red-600' : 'bg-yellow-500'}`}></div>
 
             <button 
               onClick={onClose}
@@ -71,7 +71,7 @@ export default function ConfirmModal({
               <AlertTriangle className="w-7 h-7" />
             </div>
 
-            <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">
+            <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-2 leading-tight">
               {title}
             </h3>
             

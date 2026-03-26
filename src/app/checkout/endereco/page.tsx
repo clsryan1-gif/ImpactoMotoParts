@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, MapPin, Truck, CheckCircle2, Navigation } from 'lucide-react';
+import { ChevronLeft, MapPin, Truck, CheckCircle2, Navigation, AlertCircle } from 'lucide-react';
+import { useToast } from '@/context/ToastContext';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -43,6 +44,7 @@ const BAIRROS_FLAT = Object.values(BAIRROS_POR_CIDADE).flat();
 
 export default function EnderecoPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [rua, setRua] = useState('');
   const [numero, setNumero] = useState('');
   const [complemento, setComplemento] = useState('');
@@ -66,6 +68,22 @@ export default function EnderecoPage() {
 
   const handleSalvar = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (tipoEntrega === 'ENTREGA') {
+      if (rua.trim().length < 3) {
+        showToast("⚠️ O endereço precisa de pelo menos 3 caracteres.", "error");
+        return;
+      }
+      if (!numero.trim()) {
+        showToast("⚠️ O número da residência é obrigatório.", "error");
+        return;
+      }
+      if (!bairro) {
+        showToast("📍 Por favor, selecione um bairro válido.", "error");
+        return;
+      }
+    }
+
     setLoading(true);
 
     const b = BAIRROS_FLAT.find(x => x.nome === bairro);
@@ -76,6 +94,7 @@ export default function EnderecoPage() {
       : { rua, numero, complemento, bairro, taxa, tipo: 'ENTREGA' };
 
     localStorage.setItem('@impacto-endereco', JSON.stringify(endereco));
+    showToast("🏁 Destino confirmado com sucesso!", "success");
 
     setTimeout(() => {
       router.push('/checkout');

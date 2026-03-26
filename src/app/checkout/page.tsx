@@ -230,6 +230,43 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans pb-20">
       
+      {/* Overlay de Processamento */}
+      <AnimatePresence>
+        {loadingCheckout && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center"
+          >
+            <motion.div
+              animate={{ 
+                scale: [1, 1.1, 1],
+                rotate: [0, 5, -5, 0]
+              }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="mb-8"
+            >
+              <div className="w-24 h-24 rounded-full bg-impacto-yellow/10 flex items-center justify-center border-2 border-impacto-yellow/20 relative">
+                <div className="absolute inset-0 rounded-full border-t-2 border-impacto-yellow animate-spin"></div>
+                <Zap className="w-10 h-10 text-impacto-yellow shadow-[0_0_20px_rgba(250,204,21,0.4)]" />
+              </div>
+            </motion.div>
+            
+            <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-2">AUTENTICANDO PEDIDO...</h2>
+            <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em] max-w-xs leading-relaxed">
+              Aguarde um instante. Estamos preparando sua carga para o WhatsApp da central.
+            </p>
+            
+            <div className="mt-12 flex items-center gap-2">
+               <div className="w-1.5 h-1.5 bg-impacto-yellow rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+               <div className="w-1.5 h-1.5 bg-impacto-yellow rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+               <div className="w-1.5 h-1.5 bg-impacto-yellow rounded-full animate-bounce"></div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       {/* HEADER SIMPLIFICADO - RACING THEME */}
       <header className="glass-premium sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -415,9 +452,12 @@ export default function CheckoutPage() {
                     <span className="text-zinc-200 font-medium">{BRL(total - (endereco?.taxa || 0))}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm text-zinc-400">
-                    <span className="flex items-center gap-1">Frete / Entrega <AlertCircle className="w-3 h-3 text-yellow-500/70" /></span>
-                    <span className={endereco?.taxa ? "text-zinc-200 font-medium" : "text-yellow-500 text-[10px] font-black uppercase px-2 py-0.5 bg-yellow-500/10 rounded"}>
-                      {endereco?.taxa ? BRL(endereco.taxa) : 'Grátis Beta'}
+                    <span className="flex items-center gap-1">
+                      {endereco?.tipo === 'RETIRADA' ? 'Retirada na Loja' : 'Frete / Entrega'} 
+                      <AlertCircle className="w-3 h-3 text-yellow-500/70" />
+                    </span>
+                    <span className={endereco?.taxa ? "text-zinc-200 font-medium" : "text-impacto-yellow text-[10px] font-black uppercase px-2 py-0.5 bg-impacto-yellow/10 rounded"}>
+                      {endereco?.tipo === 'RETIRADA' ? 'Grátis' : (endereco?.taxa ? BRL(endereco.taxa) : 'Grátis Beta')}
                     </span>
                   </div>
                 </div>
