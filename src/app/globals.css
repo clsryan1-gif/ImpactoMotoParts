@@ -87,18 +87,29 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Barra de Rolagem Elite */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+/* Barra de Rolagem Elite - Global e Ultra-fina */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
-.custom-scrollbar::-webkit-scrollbar-track {
+
+::-webkit-scrollbar-track {
   background: transparent;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
+
+::-webkit-scrollbar-thumb {
   background: #27272a;
   border-radius: 10px;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #3b82f6;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--impacto-yellow);
+}
+
+/* Custom scrollbar class for specific containers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #3f3f46;
 }

@@ -25,6 +25,16 @@ export default function ConfirmModal({
   cancelLabel = 'Cancelar',
   type = 'danger'
 }: ConfirmModalProps) {
+  // Bloquear scroll do corpo quando aberto
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isOpen]);
+
   const colors = {
     danger: 'text-red-500 bg-red-500/10 border-red-500/20 hover:bg-red-500 hover:text-white',
     warning: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20 hover:bg-yellow-500 hover:text-black',

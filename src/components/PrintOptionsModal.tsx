@@ -17,6 +17,16 @@ export default function PrintOptionsModal({
   onPrint,
   orderId
 }: PrintOptionsModalProps) {
+  // Bloquear scroll do corpo quando aberto
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isOpen]);
+
   return (
     <AnimatePresence>
       {isOpen && (
