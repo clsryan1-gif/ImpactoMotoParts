@@ -32,7 +32,7 @@ export default function CheckoutPage() {
   // Form controls
   const [pagamento, setPagamento] = useState('PIX');
   const [loadingCheckout, setLoadingCheckout] = useState(false);
-  const [endereco, setEndereco] = useState<{rua: string, numero: string, complemento?: string, bairro: string, taxa: number} | null>(null);
+  const [endereco, setEndereco] = useState<{rua: string, numero: string, complemento?: string, bairro: string, taxa: number, tipo?: 'ENTREGA' | 'RETIRADA'} | null>(null);
 
   const total = useMemo(() => {
     const totalItens = carrinho.reduce((a, p) => a + p.preco, 0);
@@ -426,12 +426,21 @@ export default function CheckoutPage() {
                     <motion.div 
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="bg-zinc-950/50 border border-zinc-800 p-4 rounded-2xl flex items-start gap-3"
+                      className={`border p-4 rounded-2xl flex items-start gap-3 transition-colors ${endereco.tipo === 'RETIRADA' ? 'bg-impacto-yellow/10 border-impacto-yellow/30' : 'bg-zinc-950/50 border-zinc-800'}`}
                     >
-                      <MapPin className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                      <MapPin className={`w-4 h-4 mt-0.5 shrink-0 ${endereco.tipo === 'RETIRADA' ? 'text-impacto-yellow' : 'text-red-500'}`} />
                       <div className="text-xs">
-                        <p className="text-zinc-200 font-bold leading-tight mb-1">{endereco.rua}, {endereco.numero}</p>
-                        <p className="text-zinc-500">{endereco.bairro}{endereco.complemento ? ` - ${endereco.complemento}` : ''}</p>
+                        {endereco.tipo === 'RETIRADA' ? (
+                          <>
+                            <p className="text-impacto-yellow font-black uppercase tracking-tight mb-0.5">Retirada na Loja (Grátis)</p>
+                            <p className="text-zinc-500 font-bold uppercase text-[9px]">Sede Impacto Moto Parts — Santa Rita, PB</p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-zinc-200 font-bold leading-tight mb-1">{endereco.rua}, {endereco.numero}</p>
+                            <p className="text-zinc-500 font-medium">{endereco.bairro}{endereco.complemento ? ` - ${endereco.complemento}` : ''}</p>
+                          </>
+                        )}
                       </div>
                     </motion.div>
                   ) : (
@@ -514,6 +523,7 @@ export default function CheckoutPage() {
                     <span className="tracking-widest uppercase text-sm">
                       {loadingCheckout ? 'ACELERANDO...' : 
                         !session ? 'ACESSE SUA CONTA' : 
+                        pagamento === 'WHATSAPP' ? 'ENVIAR NO WHATSAPP' :
                         `FINALIZAR NO ${pagamento.replace('_', ' ')}`
                       }
                     </span>

@@ -47,6 +47,7 @@ export default function EnderecoPage() {
   const [numero, setNumero] = useState('');
   const [complemento, setComplemento] = useState('');
   const [bairro, setBairro] = useState('');
+  const [tipoEntrega, setTipoEntrega] = useState<'ENTREGA' | 'RETIRADA'>('ENTREGA');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -58,6 +59,7 @@ export default function EnderecoPage() {
         setNumero(data.numero || '');
         setComplemento(data.complemento || '');
         setBairro(data.bairro || '');
+        if (data.tipo === 'RETIRADA') setTipoEntrega('RETIRADA');
       } catch (e) {}
     }
   }, []);
@@ -69,7 +71,10 @@ export default function EnderecoPage() {
     const b = BAIRROS_FLAT.find(x => x.nome === bairro);
     const taxa = b ? b.taxa : 0;
 
-    const endereco = { rua, numero, complemento, bairro, taxa };
+    const endereco = tipoEntrega === 'RETIRADA' 
+      ? { rua: 'Retirada na Loja', numero: 'Impacto', complemento: 'Sede Física', bairro: 'SANTA RITA', taxa: 0, tipo: 'RETIRADA' }
+      : { rua, numero, complemento, bairro, taxa, tipo: 'ENTREGA' };
+
     localStorage.setItem('@impacto-endereco', JSON.stringify(endereco));
 
     setTimeout(() => {
@@ -122,70 +127,108 @@ export default function EnderecoPage() {
           <p className="text-zinc-500 mt-2 font-black uppercase tracking-widest text-[10px]">Defina o box de destino para suas peças.</p>
         </motion.div>
 
+        {/* TOGGLE ENTREGA / RETIRADA */}
+        <div className="flex bg-zinc-900/50 p-1.5 rounded-2xl border border-zinc-800 mb-8 max-w-sm mx-auto">
+          <button 
+            type="button"
+            onClick={() => setTipoEntrega('ENTREGA')}
+            className={`flex-1 py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${tipoEntrega === 'ENTREGA' ? 'bg-impacto-yellow text-zinc-950 shadow-lg' : 'text-zinc-500 hover:text-white'}`}
+          >
+            Entregue em Casa
+          </button>
+          <button 
+            type="button"
+            onClick={() => setTipoEntrega('RETIRADA')}
+            className={`flex-1 py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${tipoEntrega === 'RETIRADA' ? 'bg-impacto-yellow text-zinc-950 shadow-lg' : 'text-zinc-500 hover:text-white'}`}
+          >
+            Retiro na Loja (Grátis)
+          </button>
+        </div>
+
         <form onSubmit={handleSalvar} className="space-y-6">
           <div className="glass-premium rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-impacto-red/5 rounded-full blur-3xl -z-10"></div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-1.5 md:col-span-2">
-                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Rua / Logradouro</label>
-                <div className="relative">
-                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+            {tipoEntrega === 'ENTREGA' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Rua / Logradouro</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                    <input 
+                      type="text" required
+                      value={rua} onChange={e => setRua(e.target.value)}
+                      className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-12 py-4 outline-none focus:border-impacto-yellow transition-all text-sm"
+                      placeholder="Ex: Av. Epitácio Pessoa"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Número</label>
                   <input 
                     type="text" required
-                    value={rua} onChange={e => setRua(e.target.value)}
-                    className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-12 py-4 outline-none focus:border-impacto-yellow transition-all text-sm"
-                    placeholder="Ex: Av. Epitácio Pessoa"
+                    value={numero} onChange={e => setNumero(e.target.value)}
+                    className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 outline-none focus:border-impacto-yellow transition-all text-sm"
+                    placeholder="Ex: 123"
                   />
                 </div>
-              </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Número</label>
-                <input 
-                  type="text" required
-                  value={numero} onChange={e => setNumero(e.target.value)}
-                  className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 outline-none focus:border-impacto-yellow transition-all text-sm"
-                  placeholder="Ex: 123"
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Complemento (Opcional)</label>
+                  <input 
+                    type="text"
+                    value={complemento} onChange={e => setComplemento(e.target.value)}
+                    className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 outline-none focus:border-impacto-yellow transition-all text-sm"
+                    placeholder="Ex: Apt 101, Bloco A"
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Complemento (Opcional)</label>
-                <input 
-                  type="text"
-                  value={complemento} onChange={e => setComplemento(e.target.value)}
-                  className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 outline-none focus:border-impacto-yellow transition-all text-sm"
-                  placeholder="Ex: Apt 101, Bloco A"
-                />
-              </div>
-
-              <div className="space-y-1.5 md:col-span-2">
-                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Bairro para Entrega</label>
-                <div className="relative">
-                  <Navigation className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-                  <select 
-                    required
-                    value={bairro} onChange={e => setBairro(e.target.value)}
-                    className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-12 py-4 outline-none focus:border-impacto-yellow transition-all text-sm appearance-none cursor-pointer"
-                  >
-                    <option value="" disabled className="bg-zinc-900">Selecione o bairro...</option>
-                    {Object.entries(BAIRROS_POR_CIDADE).map(([cidade, bairros]) => (
-                      <optgroup key={cidade} label={cidade.toUpperCase()} className="bg-zinc-900 text-impacto-yellow font-black">
-                        {bairros.map(b => (
-                          <option key={b.nome} value={b.nome} className="bg-zinc-900 text-white font-sans">
-                            {b.nome} — R$ {b.taxa.toFixed(2)}
-                          </option>
-                        ))}
-                      </optgroup>
-                    ))}
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600">
-                    <ChevronLeft className="w-4 h-4 rotate-270" />
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Bairro para Entrega</label>
+                  <div className="relative">
+                    <Navigation className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                    <select 
+                      required
+                      value={bairro} onChange={e => setBairro(e.target.value)}
+                      className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-12 py-4 outline-none focus:border-impacto-yellow transition-all text-sm appearance-none cursor-pointer"
+                    >
+                      <option value="" disabled className="bg-zinc-900">Selecione o bairro...</option>
+                      {Object.entries(BAIRROS_POR_CIDADE).map(([cidade, bairros]) => (
+                        <optgroup key={cidade} label={cidade.toUpperCase()} className="bg-zinc-900 text-impacto-yellow font-black">
+                          {bairros.map(b => (
+                            <option key={b.nome} value={b.nome} className="bg-zinc-900 text-white font-sans">
+                              {b.nome} — R$ {b.taxa.toFixed(2)}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600">
+                      <ChevronLeft className="w-4 h-4 rotate-270" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-black/20 border border-dashed border-zinc-800 rounded-3xl p-10 text-center space-y-4"
+              >
+                <div className="w-16 h-16 bg-impacto-yellow/10 rounded-full flex items-center justify-center mx-auto border border-impacto-yellow/20">
+                  <MapPin className="w-8 h-8 text-impacto-yellow" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-white uppercase tracking-tight">Vou retirar na Impacto</h3>
+                  <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mt-1">Nenhum custo adicional será cobrado pelo envio.</p>
+                </div>
+                <div className="pt-4 border-t border-zinc-800/50">
+                  <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">Endereço para Retirada:</p>
+                  <p className="text-zinc-400 text-xs font-black mt-1 uppercase">Santa Rita, PB - Impacto Moto Parts</p>
+                </div>
+              </motion.div>
+            )}
 
             <button 
               type="submit"
