@@ -9,6 +9,7 @@ import { useToast } from '@/context/ToastContext';
 import { useRouter } from 'next/navigation';
 import { hideOrder } from '@/app/admin/pedidos/actions';
 import ConfirmModal from './ConfirmModal';
+import PrintOptionsModal from './PrintOptionsModal';
 
 const BRL = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -17,6 +18,7 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<'TODOS' | 'PENDENTE' | 'PAGO' | 'ENVIADO'>('TODOS');
   const [modalDelete, setModalDelete] = useState<{ isOpen: boolean, orderId: string | null }>({ isOpen: false, orderId: null });
+  const [modalPrint, setModalPrint] = useState<{ isOpen: boolean, order: any | null }>({ isOpen: false, order: null });
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -73,7 +75,7 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
 
   const BRL = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-  const handlePrint = (pedido: any) => {
+  const handlePrint = (pedido: any, type: 'thermal' | 'a4' | 'label' = 'thermal') => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
@@ -90,96 +92,194 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
     const dataFormatada = new Date(pedido.createdAt).toLocaleDateString('pt-BR');
     const horaFormatada = new Date(pedido.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
+    let content = '';
+
+    if (type === 'thermal') {
+      content = `
+        <style>
+          @page { margin: 0; }
+          body { 
+            font-family: 'Courier New', Courier, monospace; 
+            width: 80mm; 
+            padding: 5mm; 
+            margin: 0; 
+            color: #000;
+            font-size: 12px;
+            line-height: 1.2;
+          }
+          .center { text-align: center; }
+          .bold { font-weight: bold; }
+          .border-top { border-top: 1px dashed #000; margin-top: 5px; padding-top: 5px; }
+          .border-bottom { border-bottom: 1px dashed #000; margin-bottom: 5px; padding-bottom: 5px; }
+          .large { font-size: 16px; }
+          .xlarge { font-size: 20px; }
+          table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+          th { text-align: left; border-bottom: 1px solid #000; padding: 2px; font-size: 10px; }
+          td { padding: 4px 2px; vertical-align: top; }
+          .total-box { margin-top: 10px; text-align: right; }
+          .footer { margin-top: 20px; font-size: 10px; }
+          @media print { .no-print { display: none; } }
+        </style>
+        <div class="center">
+          <div class="bold xlarge">IMPACTO MOTO PARTS</div>
+          <div>ELITE EM PERFORMANCE</div>
+          <div class="border-top border-bottom">NOTA DE ENTREGA</div>
+        </div>
+
+        <div style="margin: 10px 0;">
+          <div><span class="bold">PEDIDO:</span> #${pedido.id.substring(0, 8).toUpperCase()}</div>
+          <div><span class="bold">DATA:</span> ${dataFormatada} às ${horaFormatada}</div>
+          <div><span class="bold">CLIENTE:</span> ${pedido.user?.name || 'CONSUMIDOR'}</div>
+          <div><span class="bold">TEL:</span> ${pedido.user?.phone || 'N/A'}</div>
+        </div>
+
+        <div class="border-top">
+          <div class="center bold">DESTINO</div>
+          <div><span class="bold">RUA:</span> ${enderecoData.rua}, ${enderecoData.numero}</div>
+          ${enderecoData.complemento ? `<div><span class="bold">COMPL:</span> ${enderecoData.complemento}</div>` : ''}
+          <div><span class="bold">BAIRRO:</span> ${enderecoData.bairro}</div>
+        </div>
+
+        <div class="border-top">
+          <div class="center bold">ITENS DO PEDIDO</div>
+          <table>
+            <thead>
+              <tr>
+                <th>DESC</th>
+                <th style="text-align:center">QTD</th>
+                <th style="text-align:right">V.UNIT</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${pedido.items.map((i: any) => `
+                <tr>
+                  <td>${i.product.nome}</td>
+                  <td style="text-align:center">${i.quantity}</td>
+                  <td style="text-align:right">${BRL(i.price)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="total-box border-top">
+          <div>SUBTOTAL: ${BRL(pedido.total - (pedido.taxaEntrega || 0))}</div>
+          <div>ENTREGA: ${pedido.taxaEntrega > 0 ? BRL(pedido.taxaEntrega) : 'GRÁTIS'}</div>
+          <div class="large bold">TOTAL: ${BRL(pedido.total)}</div>
+        </div>
+
+        <div class="center footer border-top">
+          <div>OBRIGADO PELA PREFERÊNCIA!</div>
+          <div class="bold italic">Impacto Moto Parts</div>
+        </div>
+      `;
+    } else if (type === 'a4') {
+      content = `
+        <style>
+          body { font-family: 'Inter', sans-serif; padding: 40px; color: #333; }
+          .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
+          .logo { font-size: 28px; font-weight: 900; color: #000; }
+          .order-info { text-align: right; font-size: 14px; }
+          .section { margin-bottom: 40px; }
+          .section-title { font-size: 12px; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th { text-align: left; padding: 12px; background: #f9f9f9; color: #666; font-size: 11px; text-transform: uppercase; }
+          td { padding: 15px 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+          .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 12px; }
+          .total-summary { margin-left: auto; width: 300px; margin-top: 30px; }
+          .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f9f9f9; }
+          .final-total { font-size: 24px; font-weight: 900; color: #000; margin-top: 10px; }
+          @media print { .no-print { display: none; } }
+        </style>
+        <div class="header">
+          <div class="logo">IMPACTO MOTO PARTS</div>
+          <div class="order-info">
+            <div class="bold">PEDIDO: #${pedido.id.substring(0, 8).toUpperCase()}</div>
+            <div>STATUS: ${pedido.status}</div>
+            <div>DATA: ${dataFormatada} às ${horaFormatada}</div>
+          </div>
+        </div>
+
+        <div class="info-grid section">
+          <div>
+            <div class="section-title">Dados do Cliente</div>
+            <div class="bold" style="font-size: 18px;">${pedido.user?.name || 'Consumidor'}</div>
+            <div>WhatsApp: ${pedido.user?.phone || 'N/A'}</div>
+          </div>
+          <div>
+            <div class="section-title">Endereço de Entrega</div>
+            <div>${enderecoData.rua}, ${enderecoData.numero}</div>
+            ${enderecoData.complemento ? `<div>${enderecoData.complemento}</div>` : ''}
+            <div class="bold">${enderecoData.bairro}</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Resumo dos Itens</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Produto / Peça</th>
+                <th>Qtd</th>
+                <th>V. Unitário</th>
+                <th style="text-align:right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${pedido.items.map((i: any) => `
+                <tr>
+                  <td class="bold">${i.product.nome}</td>
+                  <td>${i.quantity}</td>
+                  <td>${BRL(i.price)}</td>
+                  <td style="text-align:right">${BRL(i.price * i.quantity)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="total-summary">
+          <div class="summary-row"><span>Subtotal das Peças:</span> <span>${BRL(pedido.total - (pedido.taxaEntrega || 0))}</span></div>
+          <div class="summary-row"><span>Taxa de Entrega:</span> <span>${pedido.taxaEntrega > 0 ? BRL(pedido.taxaEntrega) : 'Grátis'}</span></div>
+          <div class="final-total summary-row"><span class="bold">TOTAL FINAL:</span> <span class="bold">${BRL(pedido.total)}</span></div>
+        </div>
+
+        <div class="footer">
+          Documento gerado em ${dataFormatada}. Impacto Moto Parts - Qualidade e Confiança.
+        </div>
+      `;
+    } else {
+      // Label condensed
+      content = `
+        <style>
+          body { font-family: 'Inter', sans-serif; padding: 20px; color: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+          .label-box { border: 4px solid #000; padding: 30px; width: 400px; }
+          .title { font-size: 12px; font-weight: 900; background: #000; color: #fff; padding: 4px 10px; display: inline-block; margin-bottom: 20px; }
+          .dest { font-size: 24px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
+          .addr { font-size: 16px; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 10px; }
+          @media print { .no-print { display: none; } }
+        </style>
+        <div class="label-box">
+          <div class="title">DESTINATÁRIO / PILOTO</div>
+          <div class="dest">${pedido.user?.name || 'Consumidor'}</div>
+          <div class="addr">${enderecoData.rua}, ${enderecoData.numero}</div>
+          <div class="addr bold" style="border:none">${enderecoData.bairro}</div>
+          <div class="title" style="margin-top:20px">REMETENTE: IMPACTO MOTO PARTS</div>
+        </div>
+      `;
+    }
+
     printWindow.document.write(`
       <html>
         <head>
-          <title>Nota de Entrega #${pedido.id.substring(0, 8)}</title>
-          <style>
-            @page { margin: 0; }
-            body { 
-              font-family: 'Courier New', Courier, monospace; 
-              width: 80mm; 
-              padding: 5mm; 
-              margin: 0; 
-              color: #000;
-              font-size: 12px;
-              line-height: 1.2;
-            }
-            .center { text-align: center; }
-            .bold { font-weight: bold; }
-            .border-top { border-top: 1px dashed #000; margin-top: 5px; padding-top: 5px; }
-            .border-bottom { border-bottom: 1px dashed #000; margin-bottom: 5px; padding-bottom: 5px; }
-            .large { font-size: 16px; }
-            .xlarge { font-size: 20px; }
-            table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-            th { text-align: left; border-bottom: 1px solid #000; padding: 2px; font-size: 10px; }
-            td { padding: 4px 2px; vertical-align: top; }
-            .total-box { margin-top: 10px; text-align: right; }
-            .footer { margin-top: 20px; font-size: 10px; }
-            @media print { .no-print { display: none; } }
-          </style>
+          <title>Impressão - Pedido #${pedido.id.substring(0, 8)}</title>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
         </head>
         <body>
-          <div class="center">
-            <div class="bold xlarge">IMPACTO MOTO PARTS</div>
-            <div>ELITE EM PERFORMANCE</div>
-            <div class="border-top border-bottom">NOTA DE ENTREGA</div>
-          </div>
-
-          <div style="margin: 10px 0;">
-            <div><span class="bold">PEDIDO:</span> #${pedido.id.substring(0, 8).toUpperCase()}</div>
-            <div><span class="bold">DATA:</span> ${dataFormatada} às ${horaFormatada}</div>
-            <div><span class="bold">CLIENTE:</span> ${pedido.user?.name || 'CONSUMIDOR'}</div>
-            <div><span class="bold">TEL:</span> ${pedido.user?.phone || 'N/A'}</div>
-          </div>
-
-          <div class="border-top">
-            <div class="center bold">DESTINO</div>
-            <div><span class="bold">RUA:</span> ${enderecoData.rua}, ${enderecoData.numero}</div>
-            ${enderecoData.complemento ? `<div><span class="bold">COMPL:</span> ${enderecoData.complemento}</div>` : ''}
-            <div><span class="bold">BAIRRO:</span> ${enderecoData.bairro}</div>
-          </div>
-
-          <div class="border-top">
-            <div class="center bold">ITENS DO PEDIDO</div>
-            <table>
-              <thead>
-                <tr>
-                  <th>DESC</th>
-                  <th style="text-align:center">QTD</th>
-                  <th style="text-align:right">V.UNIT</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${pedido.items.map((i: any) => `
-                  <tr>
-                    <td>${i.product.nome}</td>
-                    <td style="text-align:center">${i.quantity}</td>
-                    <td style="text-align:right">${BRL(i.price)}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-
-          <div class="total-box border-top">
-            <div>SUBTOTAL: ${BRL(pedido.total - (pedido.taxaEntrega || 0))}</div>
-            <div>ENTREGA: ${pedido.taxaEntrega > 0 ? BRL(pedido.taxaEntrega) : 'GRÁTIS'}</div>
-            <div class="large bold">TOTAL: ${BRL(pedido.total)}</div>
-          </div>
-
-          <div class="border-top" style="margin-top: 15px;">
-            <div><span class="bold">PAGAMENTO:</span> ${pedido.paymentType.replace('_', ' ')}</div>
-            <div><span class="bold">STATUS:</span> ${pedido.status}</div>
-          </div>
-
-          <div class="center footer border-top">
-            <div>OBRIGADO PELA PREFERÊNCIA!</div>
-            <div class="bold italic">Impacto Moto Parts: Sua loja de confiança!</div>
-          </div>
-
+          ${content}
           <div class="no-print" style="margin-top: 30px; text-align: center;">
-             <button onclick="window.print()" style="padding: 20px; width: 100%; background: #000; color: #fff; border: 2px solid #333; font-weight: bold; cursor: pointer;">IMPRIMIR AGORA</button>
+             <button onclick="window.print()" style="padding: 15px 30px; background: #000; color: #fff; border: none; font-weight: bold; cursor: pointer; border-radius: 8px;">IMPRIMIR AGORA</button>
           </div>
         </body>
       </html>
@@ -334,9 +434,9 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
                 </div>
                 
                   <button 
-                    onClick={() => handlePrint(pedido)}
+                    onClick={() => setModalPrint({ isOpen: true, order: pedido })}
                     className="p-3 rounded-xl bg-zinc-800/50 hover:bg-blue-500/20 text-zinc-600 hover:text-blue-500 transition-all border border-transparent hover:border-blue-500/20"
-                    title="Imprimir Etiqueta"
+                    title="Opções de Impressão"
                   >
                     <Printer className="w-4 h-4" />
                   </button>
@@ -352,7 +452,11 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
             </div>
           </motion.div>
         ))}
-        <ConfirmModal 
+          </div>
+        )}
+      </AnimatePresence>
+
+      <ConfirmModal 
         isOpen={modalDelete.isOpen}
         onClose={() => setModalDelete({ isOpen: false, orderId: null })}
         onConfirm={confirmDelete}
@@ -361,9 +465,13 @@ export default function OrderListAdmin({ initialOrders }: { initialOrders: any[]
         confirmLabel="Pode Apagar"
         cancelLabel="Mantenha aqui"
       />
-          </div>
-        )}
-      </AnimatePresence>
+
+      <PrintOptionsModal 
+        isOpen={modalPrint.isOpen}
+        orderId={modalPrint.order?.id || ''}
+        onClose={() => setModalPrint({ isOpen: false, order: null })}
+        onPrint={(type) => handlePrint(modalPrint.order, type)}
+      />
     </div>
   );
 }

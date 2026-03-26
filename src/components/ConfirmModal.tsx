@@ -25,8 +25,6 @@ export default function ConfirmModal({
   cancelLabel = 'Cancelar',
   type = 'danger'
 }: ConfirmModalProps) {
-  if (!isOpen) return null;
-
   const colors = {
     danger: 'text-red-500 bg-red-500/10 border-red-500/20 hover:bg-red-500 hover:text-white',
     warning: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20 hover:bg-yellow-500 hover:text-black',
