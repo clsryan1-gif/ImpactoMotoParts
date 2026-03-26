@@ -68,42 +68,50 @@ export default function CheckoutPage() {
       'WHATSAPP': '🟢 Combinar via WhatsApp'
     };
 
-    let msg = `⚡ *IMPACTO MOTO PARTS - ELITE EM PERFORMANCE* ⚡\n`;
-    msg += `━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += `📦 *RESUMO DO SEU PEDIDO*\n\n`;
+    let msg = `🏁 *NOVO PEDIDO: IMPACTO MOTO PARTS* 🏁\n`;
+    msg += `🚀 *ELITE EM PERFORMANCE*\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    
     msg += `🆔 *PEDIDO:* #${orderId ? orderId.substring(0, 8).toUpperCase() : 'PENDENTE'}\n`;
-    msg += `🗓️ *DATA:* ${data} às ${horaAtual}\n`;
     msg += `👤 *PILOTO:* ${clienteNome}\n`;
+    msg += `📅 *DATA:* ${data} às ${horaAtual}\n\n`;
     
-    if (endereco) {
-      msg += `📍 *ENTREGA:* ${endereco.rua}, ${endereco.numero}${endereco.complemento ? ` (${endereco.complemento})` : ''}\n`;
-      msg += `🏘️ *BAIRRO:* ${endereco.bairro}\n`;
-    }
-    
-    msg += `━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    msg += `📦 *DETALHES DA CARGA:*\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
     
     groupedCart.forEach((p, i) => {
-      msg += `🔹 *ITEM ${i + 1}* (x${p.quantity})\n`;
-      msg += `   *Peça:* ${p.nome}\n`;
-      msg += `   *Ref:* ${p.categoria}\n`;
-      msg += `   *Subtotal:* ${BRL(p.preco * p.quantity)}\n\n`;
+      msg += `${i + 1}️⃣ *${p.nome}*\n`;
+      msg += `   └─ ⚙️ *Cat:* ${p.categoria}\n`;
+      msg += `   └─ 💰 *Sub:* ${BRL(p.preco * p.quantity)} (x${p.quantity})\n\n`;
     });
 
-    msg += `━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    
     const taxaEntrega = endereco?.taxa || 0;
     const subtotal = total - taxaEntrega;
 
-    msg += `📦 *SUBTOTAL:* ${BRL(subtotal)}\n`;
-    msg += `🚚 *ENTREGA:* ${taxaEntrega > 0 ? BRL(taxaEntrega) : 'GRÁTIS'}\n`;
-    msg += `💰 *TOTAL FINAL: ${BRL(total)}*\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `💵 *SUBTOTAL:* ${BRL(subtotal)}\n`;
+    msg += `🚚 *ENTREGA:* ${endereco?.tipo === 'RETIRADA' ? '🏁 RETIRADA NA LOJA' : (taxaEntrega > 0 ? BRL(taxaEntrega) : '✨ GRÁTIS')}\n`;
+    msg += `✨ *TOTAL FINAL:* *${BRL(total)}*\n`;
     msg += `💳 *PAGAMENTO:* ${metodoLabel[metodoFinal] || metodoFinal}\n`;
-    msg += `✅ *STATUS:* Pedido Registrado no Sistema\n\n`;
-    msg += `-----------------------------------------\n`;
-    msg += `🛡️ *COMPRA 100% SEGURA*\n`;
-    msg += `Impacto Moto Parts: Sua loja de confiança para peças de alta performance! 🛠️🏁\n`;
-    msg += `-----------------------------------------\n\n`;
-    msg += `Olá equipe Impacto! Acabei de fechar meu pedido no site. Segue o resumo para darmos continuidade ao envio. 🚀`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    
+    if (endereco) {
+      if (endereco.tipo === 'RETIRADA') {
+        msg += `📍 *OPÇÃO:* RETIRADA NA LOJA\n`;
+        msg += `🏢 *LOCAL:* Impacto Moto Parts - Santa Rita/PB\n\n`;
+      } else {
+        msg += `📍 *ENDEREÇO DE ENTREGA:*\n`;
+        msg += `   🏠 *Rua:* ${endereco.rua}, ${endereco.numero}\n`;
+        msg += `   🏙️ *Bairro:* ${endereco.bairro}\n`;
+        if (endereco.complemento) msg += `   📑 *Compl:* ${endereco.complemento}\n`;
+        msg += `\n`;
+      }
+    }
+    
+    msg += `🛡️ *DADOS REGISTRADOS COM SUCESSO!*\n`;
+    msg += `Impacto Moto Parts: Sua loja de confiança para peças de alta performance! 🛠️🏍️\n\n`;
+    msg += `------------------------------------------\n`;
+    msg += `*Olá, acabei de fechar meu pedido pelo site! Aguardo o retorno para alinhar os últimos detalhes.* 🏁🔥`;
 
     window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`, '_blank');
   };
@@ -192,12 +200,13 @@ export default function CheckoutPage() {
       // Abre o WhatsApp com os detalhes
       enviarPedidoWhatsApp(data.orderId, pagamento);
       
+      showToast("🚀 Pedido enviado para o WhatsApp com sucesso!", "success");
       limparCarrinho();
       
-      // Redireciona para sucesso após abrir o zap
+      // Não redirecionamos mais para a página de sucesso, voltamos para produtos ou mantemos aqui
       setTimeout(() => {
-        router.push(`/checkout/sucesso?order=${data.orderId}&method=${pagamento}`);
-      }, 500);
+        router.push('/produtos');
+      }, 1000);
 
     } catch (err: any) {
       showToast(err.message || 'Erro ao processar checkout. Tente novamente.', 'error');
@@ -463,21 +472,21 @@ export default function CheckoutPage() {
                     <div className="grid grid-cols-3 gap-2">
                       <button 
                         onClick={() => setPagamento('PIX')}
-                        className={`py-3 px-2 rounded-xl border flex flex-col items-center justify-center gap-1.5 font-bold text-xs tracking-widest transition-all ${pagamento === 'PIX' ? 'border-red-500 bg-red-500/10 text-red-400 shadow-[0_0_15px_rgba(220,38,38,0.2)]' : 'border-zinc-800 bg-zinc-950 text-zinc-500 hover:border-zinc-700'}`}
+                        className={`py-4 px-2 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 font-black text-[10px] tracking-widest transition-all ${pagamento === 'PIX' ? 'border-impacto-yellow bg-impacto-yellow/10 text-impacto-yellow shadow-[0_0_20px_rgba(255,183,0,0.2)]' : 'border-zinc-800 bg-zinc-950/50 text-zinc-600 hover:border-zinc-700'}`}
                       >
-                        <Zap className="w-4 h-4" /> PIX
+                        <Zap className="w-5 h-5" /> PIX
                       </button>
                       <button 
                         onClick={() => setPagamento('CARTAO_CREDITO')}
-                        className={`py-3 px-2 rounded-xl border flex flex-col items-center justify-center gap-1.5 font-bold text-xs tracking-widest transition-all ${pagamento === 'CARTAO_CREDITO' ? 'border-blue-500 bg-blue-500/10 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]' : 'border-zinc-800 bg-zinc-950 text-zinc-500 hover:border-zinc-700'}`}
+                        className={`py-4 px-2 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 font-black text-[10px] tracking-widest transition-all ${pagamento === 'CARTAO_CREDITO' ? 'border-impacto-yellow bg-impacto-yellow/10 text-impacto-yellow shadow-[0_0_20px_rgba(255,183,0,0.2)]' : 'border-zinc-800 bg-zinc-950/50 text-zinc-600 hover:border-zinc-700'}`}
                       >
-                        <span className="text-base leading-none">💳</span> CARTÃO
+                        <span className="text-xl leading-none">💳</span> CARTÃO
                       </button>
                       <button 
                         onClick={() => setPagamento('WHATSAPP')}
-                        className={`py-3 px-2 rounded-xl border flex flex-col items-center justify-center gap-1.5 font-bold text-xs tracking-widest transition-all ${pagamento === 'WHATSAPP' ? 'border-green-500 bg-green-500/10 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.2)]' : 'border-zinc-800 bg-zinc-950 text-zinc-500 hover:border-zinc-700'}`}
+                        className={`py-4 px-2 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 font-black text-[10px] tracking-widest transition-all ${pagamento === 'WHATSAPP' ? 'border-impacto-yellow bg-impacto-yellow/10 text-impacto-yellow shadow-[0_0_20px_rgba(255,183,0,0.2)]' : 'border-zinc-800 bg-zinc-950/50 text-zinc-600 hover:border-zinc-700'}`}
                       >
-                        <MessageCircle className="w-4 h-4" /> WHATS
+                        <MessageCircle className="w-5 h-5" /> OUTROS
                       </button>
                     </div>
                   </div>
